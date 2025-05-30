@@ -10,8 +10,6 @@ class ItemSearch extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
     protected array $enabled = [];
 
@@ -46,7 +44,7 @@ class ItemSearch extends Resource
         string $field_key,
         array $options = []
     ): Response {
-        $options = array_merge(compact('term', 'field_type', 'field_key'), $options);
+        $options = array_merge(['term' => $term, 'field_type' => $field_type, 'field_key' => $field_key], $options);
 
         return $this->request->get('field', $options);
     }

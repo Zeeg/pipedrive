@@ -2,8 +2,8 @@
 
 namespace Devio\Pipedrive\Resources\Traits;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
+use Illuminate\Support\Arr;
 
 trait HandlesAssignments
 {
@@ -32,7 +32,7 @@ trait HandlesAssignments
      */
     public function addAssignment(int $id, int $user_id): Response
     {
-        return $this->request->post(':id/assignments', compact('id', 'user_id'));
+        return $this->request->post(':id/assignments', ['id' => $id, 'user_id' => $user_id]);
     }
 
     /**
@@ -45,6 +45,6 @@ trait HandlesAssignments
      */
     public function deleteAssignment(int $id, int $user_id): Response
     {
-        return $this->request->delete(':id/assignments', compact('id', 'user_id'));
+        return $this->request->delete(':id/assignments', ['id' => $id, 'user_id' => $user_id]);
     }
 }

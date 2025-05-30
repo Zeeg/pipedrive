@@ -9,8 +9,6 @@ class Authorizations extends Resource
 {
     /**
      * Enabled methods
-     *
-     * @var array
      */
     protected array $enabled = ['authorize'];
 
@@ -23,6 +21,6 @@ class Authorizations extends Resource
      */
     public function authorize(string $email, string $password): Response
     {
-        return $this->request->post('/', compact('email', 'password'));
+        return $this->request->post('/', ['email' => $email, 'password' => $password]);
     }
 }

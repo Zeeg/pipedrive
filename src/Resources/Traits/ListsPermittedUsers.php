@@ -16,6 +16,6 @@ trait ListsPermittedUsers
      */
     public function permittedUsers(int $id, mixed $access_level = null): Response
     {
-        return $this->request->get(':id/permittedUsers', compact('id', 'access_level'));
+        return $this->request->get(':id/permittedUsers', ['id' => $id, 'access_level' => $access_level]);
     }
 }

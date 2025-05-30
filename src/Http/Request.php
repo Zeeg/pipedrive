@@ -3,8 +3,8 @@
 namespace Devio\Pipedrive\Http;
 
 use Devio\Pipedrive\Builder;
-use Devio\Pipedrive\Exceptions\PipedriveException;
 use Devio\Pipedrive\Exceptions\ItemNotFoundException;
+use Devio\Pipedrive\Exceptions\PipedriveException;
 
 /**
  * @method Response get($type, $target, $options = [])
@@ -16,16 +16,7 @@ use Devio\Pipedrive\Exceptions\ItemNotFoundException;
 class Request
 {
     /**
-     * The Http client instance.
-     *
-     * @var Client
-     */
-    protected Client $client;
-
-    /**
      * The Builder instance.
-     *
-     * @var Builder
      */
     protected Builder $builder;
 
@@ -34,9 +25,11 @@ class Request
      *
      * @param Client $client
      */
-    public function __construct(Client $client)
-    {
-        $this->client = $client;
+    public function __construct(/**
+         * The Http client instance.
+         */
+        protected Client $client
+    ) {
         $this->builder = $this->client->isOauth() ? Builder::OAuth() : new Builder();
     }
 
@@ -100,9 +93,9 @@ class Request
         // If the request did not succeed, we will notify the user via Exception
         // and include the server error if found. If it is OK and also server
         // inludes the success variable, we will return the response data.
-        if (!isset($content) || !($response->getStatusCode() == 302 || $response->isSuccess())) {
+        if (!isset($content) || $response->getStatusCode() != 302 && !$response->isSuccess()) {
             if ($response->getStatusCode() == 404) {
-                throw new ItemNotFoundException($content->error ?? "Error unknown.");
+                throw new ItemNotFoundException($content->error ?? 'Error unknown.');
             }
 
             if ($response->getStatusCode() == 401) {
@@ -176,12 +169,16 @@ class Request
     public function __call(string $name, array $args = []): ?Response
     {
         if (in_array($name, ['get', 'post', 'put', 'patch', 'delete'])) {
-            $options = !empty($args[1]) ? $args[1] : [];
+            $options = empty($args[1]) ? [] : $args[1];
 
             // Will pass the function name as the request type. The second argument
             // is the URI passed to the method. The third parameter will include
             // the request option values array that is stored in index 1.
-            return $this->performRequest($name, $args[0], $options);
+            try {
+                return $this->performRequest($name, $args[0], $options);
+            } catch (ItemNotFoundException | PipedriveException) {
+                // No action
+            }
         }
 
         return null;

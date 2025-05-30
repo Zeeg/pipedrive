@@ -6,9 +6,9 @@ use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 use Devio\Pipedrive\Resources\Traits\FindsByName;
 use Devio\Pipedrive\Resources\Traits\ListsActivities;
-use Devio\Pipedrive\Resources\Traits\ListsUpdates;
 use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsPermittedUsers;
+use Devio\Pipedrive\Resources\Traits\ListsUpdates;
 
 class Users extends Resource
 {
@@ -20,8 +20,6 @@ class Users extends Resource
 
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['delete', 'deleteBulk'];
 
@@ -34,6 +32,6 @@ class Users extends Resource
      */
     public function permissions(int $id): Response
     {
-        return $this->request->get(':id/permissions', compact('id'));
+        return $this->request->get(':id/permissions', ['id' => $id]);
     }
 }

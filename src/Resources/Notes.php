@@ -8,8 +8,6 @@ class Notes extends Resource
 {
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['deleteBulk'];
 }

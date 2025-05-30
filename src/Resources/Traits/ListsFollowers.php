@@ -15,6 +15,6 @@ trait ListsFollowers
      */
     public function followers(int $id): Response
     {
-        return $this->request->get(':id/followers', compact('id'));
+        return $this->request->get(':id/followers', ['id' => $id]);
     }
 }

@@ -9,22 +9,16 @@ class PipedriveToken
 {
     /**
      * The access token.
-     *
-     * @var string
      */
     protected string $accessToken;
 
     /**
      * The expiry date.
-     *
-     * @var string
      */
     protected string $expiresAt;
 
     /**
      * The refresh token.
-     *
-     * @var string
      */
     protected string $refreshToken;
 
@@ -96,15 +90,15 @@ class PipedriveToken
         $client = new GuzzleClient([
             'auth' => [
                 $pipedrive->getClientId(),
-                $pipedrive->getClientSecret()
-            ]
+                $pipedrive->getClientSecret(),
+            ],
         ]);
 
         $response = $client->request('POST', Pipedrive::PIPEDRIVE_OAUTH_URL . 'oauth/token', [
             'form_params' => [
                 'grant_type'   => 'refresh_token',
-                'refresh_token' => $this->refreshToken
-            ]
+                'refresh_token' => $this->refreshToken,
+            ],
         ]);
 
         $tokenInstance = json_decode($response->getBody());

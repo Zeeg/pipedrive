@@ -8,8 +8,6 @@ class UserSettings extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
     protected array $enabled = ['find'];
 }

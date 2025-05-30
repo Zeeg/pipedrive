@@ -2,16 +2,14 @@
 
 namespace Devio\Pipedrive\Resources;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
+use Illuminate\Support\Arr;
 
 class EmailThreads extends Resource
 {
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['add'];
 

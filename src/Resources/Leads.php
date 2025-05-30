@@ -2,10 +2,10 @@
 
 namespace Devio\Pipedrive\Resources;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 use Devio\Pipedrive\Resources\Traits\Searches;
+use Illuminate\Support\Arr;
 
 class Leads extends Resource
 {
@@ -13,8 +13,6 @@ class Leads extends Resource
 
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['deleteBulk'];
 
@@ -47,7 +45,6 @@ class Leads extends Resource
 
         return $this->request->post('', $values);
     }
-
 
     /**
      * Delete a label.

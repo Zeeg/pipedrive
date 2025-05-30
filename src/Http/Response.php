@@ -5,38 +5,26 @@ namespace Devio\Pipedrive\Http;
 class Response
 {
     /**
-     * The response code.
-     *
-     * @var integer
-     */
-    protected int $statusCode;
-
-    /**
-     * The response data.
-     *
-     * @var mixed
-     */
-    protected mixed $content;
-
-    /**
-     * The response headers.
-     *
-     * @var array
-     */
-    private array $headers;
-
-    /**
      * Response constructor.
      *
      * @param int   $statusCode
      * @param mixed$content
      * @param array $headers
      */
-    public function __construct(int $statusCode, mixed $content, array $headers = [])
-    {
-        $this->statusCode = $statusCode;
-        $this->content = $content;
-        $this->headers = $headers;
+    public function __construct(
+        /**
+         * The response code.
+         */
+        protected int $statusCode,
+        /**
+         * The response data.
+         */
+        protected mixed $content,
+        /**
+         * The response headers.
+         */
+        private readonly array $headers = []
+    ) {
     }
 
     /**
@@ -84,7 +72,7 @@ class Response
     /**
      * Get the status code.
      *
-     * @return integer
+     * @return int
      */
     public function getStatusCode(): int
     {

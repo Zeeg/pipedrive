@@ -2,40 +2,32 @@
 
 namespace Devio\Pipedrive\Resources\Basics;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
-use Devio\Pipedrive\Http\Response;
-use ReflectionClass;
-use Devio\Pipedrive\Http\Request;
 use Devio\Pipedrive\Exceptions\PipedriveException;
+use Devio\Pipedrive\Http\Request;
+use Devio\Pipedrive\Http\Response;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use ReflectionClass;
 
 abstract class Resource
 {
     /**
      * The API caller object.
-     *
-     * @var Request
      */
     protected Request $request;
 
     /**
      * List of abstract methods available.
-     *
-     * @var array
      */
     protected array $enabled = ['*'];
 
     /**
      * List of abstract methods disabled.
-     *
-     * @var array
      */
     protected array $disabled = [];
 
     /**
      * Should requests to add POST as JSON?
-     *
-     * @var bool
      */
     protected bool $addPostedAsJson = false;
 
@@ -72,7 +64,7 @@ abstract class Resource
      */
     public function find(int $id): Response
     {
-        return $this->request->get(':id', compact('id'));
+        return $this->request->get(':id', ['id' => $id]);
     }
 
     /**
@@ -129,7 +121,7 @@ abstract class Resource
      */
     public function delete(int $id): Response
     {
-        return $this->request->delete(':id', compact('id'));
+        return $this->request->delete(':id', ['id' => $id]);
     }
 
     /**
@@ -140,7 +132,7 @@ abstract class Resource
      */
     public function deleteBulk(array $ids): Response
     {
-        return $this->request->delete('', compact('ids'));
+        return $this->request->delete('', ['ids' => $ids]);
     }
 
     /**
@@ -171,7 +163,7 @@ abstract class Resource
         // First we will make sure the method only belongs to this abstract class
         // as this does not have to interfere with methods described in child
         // classes. We can now check if it is found in the enabled property.
-        if (! in_array($method, get_class_methods(get_class()))) {
+        if (! in_array($method, get_class_methods(self::class))) {
             return true;
         }
 
@@ -243,7 +235,11 @@ abstract class Resource
         // methods described in this function, we can disable some methods
         // in the `disabled` property of the class throwing an exception.
         if (! $this->isEnabled($method)) {
-            throw new PipedriveException("The method {$method}() is not available for the resource {$this->getName()}");
+            throw new PipedriveException(sprintf(
+                'The method %s() is not available for the resource %s',
+                $method,
+                $this->getName()
+            ));
         }
     }
 }

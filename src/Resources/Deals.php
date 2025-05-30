@@ -2,29 +2,26 @@
 
 namespace Devio\Pipedrive\Resources;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Entity;
-use Devio\Pipedrive\Resources\Traits\Searches;
-use Devio\Pipedrive\Resources\Traits\ListsProducts;
 use Devio\Pipedrive\Resources\Traits\ListsAttachedFiles;
+use Devio\Pipedrive\Resources\Traits\ListsProducts;
+use Devio\Pipedrive\Resources\Traits\Searches;
+use Illuminate\Support\Arr;
 
 class Deals extends Entity
 {
-    use ListsProducts;
     use ListsAttachedFiles;
+    use ListsProducts;
     use Searches;
 
     /**
-     *
      * Get the deals summary
      *
      * @param array $options
      *
      * @return Response
-     *
-    */
-
+     */
     public function summary(array $options = []): Response
     {
 
@@ -49,7 +46,7 @@ class Deals extends Entity
         array $options = []
     ): Response {
         $options = array_merge(
-            compact('start_date', 'interval', 'amount', 'field_key'),
+            ['start_date' => $start_date, 'interval' => $interval, 'amount' => $amount, 'field_key' => $field_key],
             $options
         );
 
@@ -66,7 +63,7 @@ class Deals extends Entity
      */
     public function addParticipant(int $id, int $person_id): Response
     {
-        return $this->request->post(':id/participants', compact('id', 'person_id'));
+        return $this->request->post(':id/participants', ['id' => $id, 'person_id' => $person_id]);
     }
 
     /**
@@ -94,7 +91,7 @@ class Deals extends Entity
      */
     public function deleteParticipant(int $id, int $deal_participant_id): Response
     {
-        return $this->request->delete(':id/participants/:deal_participant_id', compact('id', 'deal_participant_id'));
+        return $this->request->delete(':id/participants/:deal_participant_id', ['id' => $id, 'deal_participant_id' => $deal_participant_id]);
     }
 
     /**
@@ -115,7 +112,7 @@ class Deals extends Entity
         array $options = []
     ): Response {
         $options = array_merge(
-            compact('id', 'product_id', 'item_price', 'quantity'),
+            ['id' => $id, 'product_id' => $product_id, 'item_price' => $item_price, 'quantity' => $quantity],
             $options
         );
 
@@ -140,7 +137,7 @@ class Deals extends Entity
         array $options = []
     ): Response {
         $options = array_merge(
-            compact('id', 'deal_product_id', 'item_price', 'quantity'),
+            ['id' => $id, 'deal_product_id' => $deal_product_id, 'item_price' => $item_price, 'quantity' => $quantity],
             $options
         );
 
@@ -159,7 +156,7 @@ class Deals extends Entity
     {
         return $this->request->delete(
             ':id/products/:product_attachment_id',
-            compact('id', 'product_attachment_id')
+            ['id' => $id, 'product_attachment_id' => $product_attachment_id]
         );
     }
 
@@ -172,7 +169,7 @@ class Deals extends Entity
      */
     public function duplicate(int $id): Response
     {
-        return $this->request->post(':id/duplicate', compact('id'));
+        return $this->request->post(':id/duplicate', ['id' => $id]);
     }
 
     /**
@@ -184,7 +181,7 @@ class Deals extends Entity
      */
     public function mailMessages(int $id): Response
     {
-        return $this->request->get(':id/mailMessages', compact('id'));
+        return $this->request->get(':id/mailMessages', ['id' => $id]);
     }
 
     /**
@@ -196,6 +193,6 @@ class Deals extends Entity
      */
     public function files(int $id): Response
     {
-        return $this->request->get(':id/files', compact('id'));
+        return $this->request->get(':id/files', ['id' => $id]);
     }
 }

@@ -19,6 +19,6 @@ class CallLogs extends Resource
      */
     public function addRecording(int $id, \SplFileInfo $file): Response
     {
-        return $this->request->post(':id/recordings', compact('id', 'file'));
+        return $this->request->post(':id/recordings', ['id' => $id, 'file' => $file]);
     }
 }

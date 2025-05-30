@@ -2,9 +2,9 @@
 
 namespace Devio\Pipedrive\Resources;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
+use Illuminate\Support\Arr;
 
 /**
  * @deprecated
@@ -13,8 +13,6 @@ class SearchResults extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
     protected array $enabled = [];
 
@@ -49,7 +47,7 @@ class SearchResults extends Resource
         string $field_key,
         array $options = []
     ): Response {
-        $options = array_merge(compact('term', 'field_type', 'field_key'), $options);
+        $options = array_merge(['term' => $term, 'field_type' => $field_type, 'field_key' => $field_key], $options);
 
         return $this->request->get('field', $options);
     }

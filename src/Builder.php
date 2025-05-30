@@ -9,29 +9,21 @@ class Builder
 {
     /**
      * API base URL.
-     *
-     * @var string
      */
     protected string $base = Pipedrive::PIPEDRIVE_API_URL . '{endpoint}';
 
     /**
      * Resource name.
-     *
-     * @var string
      */
     protected string $resource = '';
 
     /**
      * Full URI without resource.
-     *
-     * @var string
      */
     protected string $target = '';
 
     /**
      * The API token.
-     *
-     * @var string
      */
     protected string $token;
 
@@ -67,16 +59,15 @@ class Builder
      *
      * @param array $options
      *
-     * @return string
+     * @return string|null
      *
-     * @throws InvalidArgumentException
      */
-    public function buildEndpoint(array $options = []): string
+    public function buildEndpoint(array $options = []): ?string
     {
         $endpoint = $this->getEndpoint();
 
         // Having the URI, we'll now replace every parameter preceed with a colon
-        // character with the values matching the keys of the options array. If
+        // character with the values matching the keys of the 'options' array. If
         // any of these parameters is not set we'll notify with an exception.
         foreach ($options as $key => $value) {
             if (is_array($value)) {
@@ -91,10 +82,10 @@ class Builder
                 }
             }
 
-            $endpoint = preg_replace("/:{$key}/", $value, $endpoint);
+            $endpoint = preg_replace(sprintf('/:%s/', $key), (string) $value, (string) $endpoint);
         }
 
-        if (count($this->getParameters($endpoint))) {
+        if ($this->getParameters($endpoint) !== []) {
             throw new InvalidArgumentException('The URI contains unassigned params.');
         }
 
@@ -127,12 +118,12 @@ class Builder
      *
      * @return string
      */
-    protected function getEndpoint()
+    protected function getEndpoint(): string
     {
         $result = $this->getTarget();
 
         if (!empty($this->getResource())) {
-                $result = $this->getResource() . '/' . $result;
+            $result = $this->getResource() . '/' . $result;
         }
 
         return rtrim($result, '/');

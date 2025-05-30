@@ -2,10 +2,10 @@
 
 namespace Devio\Pipedrive\Resources;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 use Devio\Pipedrive\Resources\Traits\HandlesAssignments;
+use Illuminate\Support\Arr;
 
 class Roles extends Resource
 {
@@ -13,8 +13,6 @@ class Roles extends Resource
 
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['deleteBulk'];
 
@@ -42,7 +40,7 @@ class Roles extends Resource
      */
     public function settings(int $id): Response
     {
-        return $this->request->get(':id/settings', compact('id'));
+        return $this->request->get(':id/settings', ['id' => $id]);
     }
 
     /**
@@ -58,7 +56,7 @@ class Roles extends Resource
     {
         return $this->request->post(
             ':id/settings',
-            compact('id', 'setting_key', 'value')
+            ['id' => $id, 'setting_key' => $setting_key, 'value' => $value]
         );
     }
 }

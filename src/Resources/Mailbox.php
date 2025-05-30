@@ -16,7 +16,7 @@ class Mailbox extends Resource
      */
     public function find(int $id): Response
     {
-        return $this->request->get('mailThreads/:id', compact('id'));
+        return $this->request->get('mailThreads/:id', ['id' => $id]);
     }
 
     /**
@@ -28,7 +28,7 @@ class Mailbox extends Resource
      */
     public function delete(int $id): Response
     {
-        return $this->request->delete('mailThreads/:id', compact('id'));
+        return $this->request->delete('mailThreads/:id', ['id' => $id]);
     }
 
     /**
@@ -42,6 +42,7 @@ class Mailbox extends Resource
     public function update(int $id, array $values): Response
     {
         $values['id'] = $id;
+
         return $this->request->put('mailThreads/:id', $values);
     }
 
@@ -71,6 +72,7 @@ class Mailbox extends Resource
     public function mailMessages(int $id, array $params = []): Response
     {
         $params['id'] = $id;
+
         return $this->request->get('mailThreads/:id/mailMessages', $params);
     }
 
@@ -82,6 +84,6 @@ class Mailbox extends Resource
      */
     public function mailSpecificMessage(mixed $id): Response
     {
-        return $this->request->get('mailMessages/:id', compact('id'));
+        return $this->request->get('mailMessages/:id', ['id' => $id]);
     }
 }

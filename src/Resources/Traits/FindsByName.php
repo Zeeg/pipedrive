@@ -14,7 +14,7 @@ trait FindsByName
      *
      * @return Response
      * @deprecated   Use the search method instead
-	 */
+     */
     public function findByName(string $term, array $options = []): Response
     {
         $options['term'] = $term;

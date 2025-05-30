@@ -2,8 +2,8 @@
 
 namespace Devio\Pipedrive\Resources\Traits;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
+use Illuminate\Support\Arr;
 
 trait ListsDeals
 {

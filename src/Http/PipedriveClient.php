@@ -2,28 +2,24 @@
 
 namespace Devio\Pipedrive\Http;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Pipedrive;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Exception\GuzzleException;
 use Devio\Pipedrive\PipedriveTokenStorage;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Arr;
 
 class PipedriveClient implements Client
 {
     /**
      * The Guzzle client instance.
-     *
-     * @var GuzzleClient
      */
     protected GuzzleClient $client;
 
     /**
      * Oauth flag
-     *
-     * @var bool
      */
     protected bool $isOauth = false;
 
@@ -51,7 +47,7 @@ class PipedriveClient implements Client
                 'base_uri'        => $url,
                 'allow_redirects' => false,
                 'headers'         => $headers,
-                'query'           => $query
+                'query'           => $query,
             ]
         );
     }
@@ -72,7 +68,7 @@ class PipedriveClient implements Client
     ): self {
         $token = $storage->getToken();
 
-        if (! $token || !$token->valid()) {
+        if (!$token instanceof \Devio\Pipedrive\PipedriveToken || !$token->valid()) {
             $pipedrive->OAuthRedirect();
         }
 
@@ -149,6 +145,7 @@ class PipedriveClient implements Client
         foreach (Arr::except($parameters, 'file') as $key => $value) {
             $result[] = ['name' => $key, 'contents' => (string) $value];
         }
+
         // Will convert every element of the array into a format accepted by the
         // multipart encoding standards. It will also add a special item which
         // includes the file key name, the content of the file and its name.
@@ -238,13 +235,16 @@ class PipedriveClient implements Client
         // any other info. Both OK and fail will generate a response object.
         try {
             $response = $client->send($request, $options);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
+        } catch (BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
         }
+
         // As there are a few responses that are supposed to perform the
         // download of a file, we will filter them. If found, we will
         // set the file download URL as the response content data.
-        $body = $response->getHeader('location') ?: json_decode($response->getBody());
+        $body = $response->getHeader('location') !== []
+            ? $response->getHeader('location')
+            : json_decode($response->getBody());
 
         return new Response(
             $response->getStatusCode(),
@@ -254,7 +254,7 @@ class PipedriveClient implements Client
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function isOauth(): bool
     {

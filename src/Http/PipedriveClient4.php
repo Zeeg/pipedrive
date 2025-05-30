@@ -4,19 +4,17 @@ namespace Devio\Pipedrive\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Post\PostFile;
+use GuzzleHttp\Exception\BadResponseException;
 // use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Message\Request as GuzzleRequest;
-use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Post\PostFile;
 use Psr\Http\Message\RequestInterface;
 
 class PipedriveClient4 implements Client
 {
     /**
      * The Guzzle client instance.
-     *
-     * @var GuzzleClient
      */
     protected GuzzleClient $client;
 
@@ -24,8 +22,6 @@ class PipedriveClient4 implements Client
 
     /**
      * Oauth flag
-     *
-     * @var bool
      */
     protected bool $isOauth = false;
 
@@ -42,7 +38,7 @@ class PipedriveClient4 implements Client
                 'base_url' => $url,
                 'defaults' => [
                     'query' => ['api_token' => $token],
-                ]
+                ],
             ]
         );
     }
@@ -92,7 +88,7 @@ class PipedriveClient4 implements Client
      * @param array $parameters
      * @return array
      */
-    protected function multipart(array $parameters)
+    protected function multipart(array $parameters): array
     {
         if (! ($file = $parameters['file']) instanceof \SplFileInfo) {
             throw new \InvalidArgumentException('File must be an instance of \SplFileInfo.');
@@ -146,30 +142,35 @@ class PipedriveClient4 implements Client
      */
     protected function execute(
         GuzzleRequest $request,
-        GuzzleClient|null $client = null
+        ?GuzzleClient $client = null
     ): Response {
-        $client = $client ?: $this->getClient();
+        $client = $client instanceof \GuzzleHttp\Client ? $client : $this->getClient();
 
         // We will just execute the given request using the default or given client
         // and with the passed options wich may contain the query, body vars, or
         // any other info. Both OK and fail will generate a response object.
         try {
             $response = $client->send($request);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
+        } catch (BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
         }
+
         // As there are a few responses that are supposed to perform the
         // download of a file, we will filter them. If found, we will
         // set the file download URL as the response content data.
-        $body = $response->getHeader('location') ?: json_decode($response->getBody());
+        $body = $response->getHeader('location') !== []
+            ? $response->getHeader('location')
+            : json_decode($response->getBody());
 
         return new Response(
-            $response->getStatusCode(), $body, $response->getHeaders()
+            $response->getStatusCode(),
+            $body,
+            $response->getHeaders()
         );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     public function isOauth(): bool
     {

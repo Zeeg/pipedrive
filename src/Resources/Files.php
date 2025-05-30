@@ -9,8 +9,6 @@ class Files extends Resource
 {
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
     protected array $disabled = ['deleteBulk'];
 
@@ -34,7 +32,7 @@ class Files extends Resource
     ): Response {
         return $this->request->post(
             'remote',
-            compact('file_type', 'title', 'item_type', 'item_id', 'remote_location')
+            ['file_type' => $file_type, 'title' => $title, 'item_type' => $item_type, 'item_id' => $item_id, 'remote_location' => $remote_location]
         );
     }
 
@@ -55,7 +53,7 @@ class Files extends Resource
     ): Response {
         return $this->request->post(
             'remoteLink',
-            compact('item_type', 'item_id', 'remote_id', 'remote_location')
+            ['item_type' => $item_type, 'item_id' => $item_id, 'remote_id' => $remote_id, 'remote_location' => $remote_location]
         );
     }
 
@@ -68,6 +66,6 @@ class Files extends Resource
      */
     public function download(int $id): Response
     {
-        return $this->request->get(':id/download', compact('id'));
+        return $this->request->get(':id/download', ['id' => $id]);
     }
 }

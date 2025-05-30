@@ -2,14 +2,14 @@
 
 namespace Devio\Pipedrive\Resources\Basics;
 
-use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Traits\FindsByName;
 use Devio\Pipedrive\Resources\Traits\ListsActivities;
-use Devio\Pipedrive\Resources\Traits\ListsUpdates;
-use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsAttachedFiles;
+use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsPermittedUsers;
+use Devio\Pipedrive\Resources\Traits\ListsUpdates;
+use Illuminate\Support\Arr;
 
 abstract class Entity extends Resource
 {
@@ -45,7 +45,7 @@ abstract class Entity extends Resource
      */
     public function addFollower(int $id, int $user_id): Response
     {
-        return $this->request->post(':id/followers', compact('id', 'user_id'));
+        return $this->request->post(':id/followers', ['id' => $id, 'user_id' => $user_id]);
     }
 
     /**
@@ -58,7 +58,7 @@ abstract class Entity extends Resource
      */
     public function deleteFollower(int $id, int $follower_id): Response
     {
-        return $this->request->delete(':id/followers/:follower_id', compact('id', 'follower_id'));
+        return $this->request->delete(':id/followers/:follower_id', ['id' => $id, 'follower_id' => $follower_id]);
     }
 
     /**
@@ -71,6 +71,6 @@ abstract class Entity extends Resource
      */
     public function merge(int $id, int $merge_with_id): Response
     {
-        return $this->request->put(':id/merge', compact('id', 'merge_with_id'));
+        return $this->request->put(':id/merge', ['id' => $id, 'merge_with_id' => $merge_with_id]);
     }
 }
