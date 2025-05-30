@@ -8,8 +8,6 @@ class Recents extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
-    protected $enabled = ['all'];
+    protected array $enabled = ['all'];
 }

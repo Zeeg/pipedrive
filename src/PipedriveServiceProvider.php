@@ -3,6 +3,7 @@
 namespace Devio\Pipedrive;
 
 use Devio\Pipedrive\Exceptions\PipedriveException;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
 class PipedriveServiceProvider extends ServiceProvider
@@ -12,19 +13,19 @@ class PipedriveServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
-        $this->app->booting( function () {
-            $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-            $loader->alias( 'Pipedrive', 'Devio\Pipedrive\PipedriveFacade' );
-        } );
+        $this->app->booting(function (): void {
+            $loader = AliasLoader::getInstance();
+            $loader->alias('Pipedrive', PipedriveFacade::class);
+        });
 
-        $this->app->singleton(Pipedrive::class, function ($app) {
+        $this->app->singleton(Pipedrive::class, static function (array $app): \Devio\Pipedrive\Pipedrive {
             $token = $app['config']->get('services.pipedrive.token');
             $uri = $app['config']->get('services.pipedrive.uri') ?: Pipedrive::PIPEDRIVE_API_URL;
             $guzzleVersion = $app['config']->get('services.pipedrive.guzzle_version') ?: 6;
 
-            if (! $token) {
+            if (!$token) {
                 throw new PipedriveException('Pipedrive was not configured in services.php configuration file.');
             }
 
@@ -37,7 +38,7 @@ class PipedriveServiceProvider extends ServiceProvider
     /**
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return ['pipedrive'];
     }

@@ -5,6 +5,7 @@ namespace Devio\Pipedrive\Resources;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 use Devio\Pipedrive\Resources\Traits\Searches;
+use Illuminate\Support\Arr;
 
 class Leads extends Resource
 {
@@ -12,19 +13,17 @@ class Leads extends Resource
 
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
-    protected $disabled = ['deleteBulk'];
+    protected array $disabled = ['deleteBulk'];
 
-    protected $addPostedAsJson = true;
+    protected bool $addPostedAsJson = true;
 
     /**
      * Get all labels.
      *
      * @return Response
      */
-    public function labels()
+    public function labels(): Response
     {
         $this->request->setResource('leadLabels');
 
@@ -34,9 +33,11 @@ class Leads extends Resource
     /**
      * Add a label.
      *
+     * @param array $values
+     *
      * @return Response
      */
-    public function addLabel(array $values = [])
+    public function addLabel(array $values = []): Response
     {
         $this->request->setResource('leadLabels');
 
@@ -45,14 +46,14 @@ class Leads extends Resource
         return $this->request->post('', $values);
     }
 
-
     /**
      * Delete a label.
      *
-     * @var int $id
+     * @param  int $id
+     *
      * @return Response
      */
-    public function deleteLabel($id)
+    public function deleteLabel(int $id): Response
     {
         $this->request->setResource('leadLabels');
 
@@ -62,9 +63,10 @@ class Leads extends Resource
     /**
      * @param int   $id
      * @param array $values
+     *
      * @return Response
      */
-    public function updateLabel($id, array $values = [])
+    public function updateLabel(int $id, array $values = []): Response
     {
         $this->request->setResource('leadLabels');
 
@@ -74,13 +76,14 @@ class Leads extends Resource
     /**
      * @param int   $id
      * @param array $values
+     *
      * @return Response
      */
-    public function update($id, array $values = [])
+    public function update(int $id, array $values): Response
     {
         $values['json'] = true;
 
-        array_set($values, 'id', $id);
+        Arr::set($values, 'id', $id);
 
         return $this->request->patch(':id', $values);
     }
@@ -90,7 +93,7 @@ class Leads extends Resource
      *
      * @return Response
      */
-    public function sources()
+    public function sources(): Response
     {
         $this->request->setResource('leadSources');
 

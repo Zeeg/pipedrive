@@ -8,8 +8,6 @@ class EmailMessages extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
-    protected $enabled = ['find', 'update', 'delete', 'deleteBulk'];
+    protected array $enabled = ['find', 'update', 'delete', 'deleteBulk'];
 }

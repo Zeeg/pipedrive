@@ -5,38 +5,26 @@ namespace Devio\Pipedrive\Http;
 class Response
 {
     /**
-     * The response code.
-     *
-     * @var integer
-     */
-    protected $statusCode;
-
-    /**
-     * The response data.
-     *
-     * @var mixed
-     */
-    protected $content;
-
-    /**
-     * The response headers.
-     *
-     * @var array
-     */
-    private $headers;
-
-    /**
      * Response constructor.
      *
-     * @param       $statusCode
-     * @param       $content
+     * @param int   $statusCode
+     * @param mixed$content
      * @param array $headers
      */
-    public function __construct($statusCode, $content, $headers = [])
-    {
-        $this->statusCode = $statusCode;
-        $this->content = $content;
-        $this->headers = $headers;
+    public function __construct(
+        /**
+         * The response code.
+         */
+        protected int $statusCode,
+        /**
+         * The response data.
+         */
+        protected mixed $content,
+        /**
+         * The response headers.
+         */
+        private readonly array $headers = []
+    ) {
     }
 
     /**
@@ -44,7 +32,7 @@ class Response
      *
      * @return bool
      */
-    public function isSuccess()
+    public function isSuccess(): bool
     {
         if (! $this->getContent()) {
             return false;
@@ -56,9 +44,9 @@ class Response
     /**
      * Get the request data.
      *
-     * @return mixed[]|\stdClass
+     * @return array|\stdClass|null
      */
-    public function getData()
+    public function getData(): array|\stdClass|null
     {
         if ($this->isSuccess() && isset($this->getContent()->data)) {
             return $this->getContent()->data;
@@ -72,7 +60,7 @@ class Response
      *
      * @return mixed[]|\stdClass
      */
-    public function getAdditionalData()
+    public function getAdditionalData(): array|\stdClass|null
     {
         if ($this->isSuccess() && isset($this->getContent()->additional_data)) {
             return $this->getContent()->additional_data;
@@ -84,9 +72,9 @@ class Response
     /**
      * Get the status code.
      *
-     * @return integer
+     * @return int
      */
-    public function getStatusCode()
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
@@ -96,7 +84,7 @@ class Response
      *
      * @return mixed
      */
-    public function getContent()
+    public function getContent(): mixed
     {
         return $this->content;
     }
@@ -106,7 +94,7 @@ class Response
      *
      * @return array
      */
-    public function getHeaders()
+    public function getHeaders(): array
     {
         return $this->headers;
     }

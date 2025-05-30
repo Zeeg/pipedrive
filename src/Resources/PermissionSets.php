@@ -11,8 +11,6 @@ class PermissionSets extends Resource
 
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
-    protected $enabled = ['all', 'find', 'update'];
+    protected array $enabled = ['all', 'find', 'update'];
 }

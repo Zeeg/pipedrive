@@ -2,7 +2,10 @@
 
 namespace Devio\Pipedrive;
 
+use Devio\Pipedrive\Http\Client;
+use Devio\Pipedrive\Http\PipedriveClient;
 use Devio\Pipedrive\Http\PipedriveClient4;
+use Devio\Pipedrive\Http\Request;
 use Devio\Pipedrive\Resources\Activities;
 use Devio\Pipedrive\Resources\ActivityFields;
 use Devio\Pipedrive\Resources\ActivityTypes;
@@ -39,145 +42,119 @@ use Devio\Pipedrive\Resources\UserConnections;
 use Devio\Pipedrive\Resources\Users;
 use Devio\Pipedrive\Resources\UserSettings;
 use Devio\Pipedrive\Resources\Webhooks;
-use Illuminate\Support\Str;
-use Devio\Pipedrive\Http\Request;
-use Devio\Pipedrive\Http\PipedriveClient;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Str;
 
 /**
- * @method Activities activities()
- * @method ActivityFields activityFields()
- * @method ActivityTypes activityTypes()
- * @method Authorizations authorizations()
- * @method CallLogs callLogs()
- * @method Currencies currencies()
- * @method DealFields dealFields()
- * @method Deals deals()
- * @method EmailMessages emailMessages()
- * @method EmailThreads emailThreads()
- * @method Files files()
- * @method Filters filters()
- * @method GlobalMessages globalMessages()
- * @method Goals goals()
- * @method ItemSearch itemSearch()
- * @method Leads leads()
- * @method NoteFields noteFields()
- * @method Notes notes()
- * @method OrganizationFields organizationFields()
- * @method OrganizationRelationships organizationRelationships()
- * @method Organizations organizations()
- * @method PermissionSets permissionSets()
- * @method PersonFields personFields()
- * @method Persons persons()
- * @method Pipelines pipelines()
- * @method ProductFields productFields()
- * @method Products products()
- * @method PushNotifications pushNotifications()
- * @method Recents recents()
- * @method Roles roles()
- * @method SearchResults searchResults()
- * @method Stages stages()
- * @method UserConnections userConnections()
- * @method Users users()
- * @method UserSettings userSettings()
- * @method Webhooks webhooks()
- * @property-read Activities $activities
- * @property-read ActivityFields $activityFields
- * @property-read ActivityTypes $activityTypes
- * @property-read Authorizations $authorizations
- * @property-read CallLogs $callLogs
- * @property-read Currencies $currencies
- * @property-read DealFields $dealFields
- * @property-read Deals $deals
- * @property-read EmailMessages $emailMessages
- * @property-read EmailThreads $emailThreads
- * @property-read Files $files
- * @property-read Filters $filters
- * @property-read GlobalMessages $globalMessages
- * @property-read Goals $goals
- * @property-read ItemSearch $itemSearch
- * @property-read Leads $leads
- * @property-read NoteFields $noteFields
- * @property-read Notes $notes
- * @property-read OrganizationFields $organizationFields
+ * @method        Activities                activities()
+ * @method        ActivityFields            activityFields()
+ * @method        ActivityTypes             activityTypes()
+ * @method        Authorizations            authorizations()
+ * @method        CallLogs                  callLogs()
+ * @method        Currencies                currencies()
+ * @method        DealFields                dealFields()
+ * @method        Deals                     deals()
+ * @method        EmailMessages             emailMessages()
+ * @method        EmailThreads              emailThreads()
+ * @method        Files                     files()
+ * @method        Filters                   filters()
+ * @method        GlobalMessages            globalMessages()
+ * @method        Goals                     goals()
+ * @method        ItemSearch                itemSearch()
+ * @method        Leads                     leads()
+ * @method        NoteFields                noteFields()
+ * @method        Notes                     notes()
+ * @method        OrganizationFields        organizationFields()
+ * @method        OrganizationRelationships organizationRelationships()
+ * @method        Organizations             organizations()
+ * @method        PermissionSets            permissionSets()
+ * @method        PersonFields              personFields()
+ * @method        Persons                   persons()
+ * @method        Pipelines                 pipelines()
+ * @method        ProductFields             productFields()
+ * @method        Products                  products()
+ * @method        PushNotifications         pushNotifications()
+ * @method        Recents                   recents()
+ * @method        Roles                     roles()
+ * @method        SearchResults             searchResults()
+ * @method        Stages                    stages()
+ * @method        UserConnections           userConnections()
+ * @method        Users                     users()
+ * @method        UserSettings              userSettings()
+ * @method        Webhooks                  webhooks()
+ * @property-read Activities                $activities
+ * @property-read ActivityFields            $activityFields
+ * @property-read ActivityTypes             $activityTypes
+ * @property-read Authorizations            $authorizations
+ * @property-read CallLogs                  $callLogs
+ * @property-read Currencies                $currencies
+ * @property-read DealFields                $dealFields
+ * @property-read Deals                     $deals
+ * @property-read EmailMessages             $emailMessages
+ * @property-read EmailThreads              $emailThreads
+ * @property-read Files                     $files
+ * @property-read Filters                   $filters
+ * @property-read GlobalMessages            $globalMessages
+ * @property-read Goals                     $goals
+ * @property-read ItemSearch                $itemSearch
+ * @property-read Leads                     $leads
+ * @property-read NoteFields                $noteFields
+ * @property-read Notes                     $notes
+ * @property-read OrganizationFields        $organizationFields
  * @property-read OrganizationRelationships $organizationRelationships
- * @property-read Organizations $organizations
- * @property-read PermissionSets $permissionSets
- * @property-read PersonFields $personFields
- * @property-read Persons $persons
- * @property-read Pipelines $pipelines
- * @property-read ProductFields $productFields
- * @property-read Products $products
- * @property-read PushNotifications $pushNotifications
- * @property-read Recents $recents
- * @property-read Roles $roles
- * @property-read SearchResults $searchResults
- * @property-read Stages $stages
- * @property-read UserConnections $userConnections
- * @property-read Users $users
- * @property-read UserSettings $userSettings
- * @property-read Webhooks $webhooks
+ * @property-read Organizations             $organizations
+ * @property-read PermissionSets            $permissionSets
+ * @property-read PersonFields              $personFields
+ * @property-read Persons                   $persons
+ * @property-read Pipelines                 $pipelines
+ * @property-read ProductFields             $productFields
+ * @property-read Products                  $products
+ * @property-read PushNotifications         $pushNotifications
+ * @property-read Recents                   $recents
+ * @property-read Roles                     $roles
+ * @property-read SearchResults             $searchResults
+ * @property-read Stages                    $stages
+ * @property-read UserConnections           $userConnections
+ * @property-read Users                     $users
+ * @property-read UserSettings              $userSettings
+ * @property-read Webhooks                  $webhooks
  */
 class Pipedrive
 {
     public const PIPEDRIVE_DOMAIN = 'pipedrive.com';
+
     public const API_VERSION = 'v1';
-    public const PIPEDRIVE_API_DOMAIN = 'https://api.' . self::PIPEDRIVE_DOMAIN .'/';
+
+    public const PIPEDRIVE_API_DOMAIN = 'https://api.' . self::PIPEDRIVE_DOMAIN . '/';
+
     public const PIPEDRIVE_API_URL = self::PIPEDRIVE_API_DOMAIN . self::API_VERSION . '/';
+
     public const PIPEDRIVE_OAUTH_URL = 'https://oauth.' . self::PIPEDRIVE_DOMAIN . '/';
 
-    /**
-     * The base URI.
-     *
-     * @var string
-     */
-    protected $baseURI;
-
-    /**
-     * The API token.
-     *
-     * @var string
-     */
-    protected $token;
-
-    /**
-     * The guzzle version
-     *
-     * @var int
-     */
-    protected $guzzleVersion;
-
-    protected $isOauth;
+    protected bool $isOauth = false;
 
     /**
      * The OAuth client id.
-     *
-     * @var string
      */
-    protected $clientId;
+    protected string $clientId;
 
     /**
      * The client secret string.
-     *
-     * @var string
      */
-    protected $clientSecret;
+    protected string $clientSecret;
 
     /**
      * The redirect URL.
-     *
-     * @var string
      */
-    protected $redirectUrl;
+    protected string $redirectUrl;
 
     /**
      * The OAuth storage.
-     *
-     * @var mixed
      */
-    protected $storage;
+    protected PipedriveTokenStorage $storage;
 
-    public function isOauth()
+    public function isOauth(): bool
     {
         return $this->isOauth;
     }
@@ -185,26 +162,36 @@ class Pipedrive
     /**
      * Pipedrive constructor.
      *
-     * @param $token
+     * @param string|PipedriveToken $token
+     * @param string $baseURI
+     * @param int    $guzzleVersion
      */
-    public function __construct($token = '', $uri = self::PIPEDRIVE_API_URL, $guzzleVersion = 6)
-    {
-        $this->token = $token;
-        $this->baseURI = $uri;
-        $this->guzzleVersion = $guzzleVersion;
-
-        $this->isOauth = false;
+    public function __construct(
+        /**
+         * The API token.
+         */
+        protected string|PipedriveToken $token = '',
+        /**
+         * The base URI.
+         */
+        protected string $baseURI = self::PIPEDRIVE_API_URL,
+        /**
+         * The guzzle version
+         */
+        protected int $guzzleVersion = 6
+    ) {
     }
 
     /**
      * Prepare for OAuth.
      *
-     * @param $config
+     * @param array $config
+     *
      * @return Pipedrive
      */
-    public static function OAuth($config)
+    public static function OAuth(array $config): self
     {
-        $guzzleVersion = isset($config['guzzleVersion']) ? $config['guzzleVersion'] : 6;
+        $guzzleVersion = $config['guzzleVersion'] ?? 6;
 
         $new = new self('oauth', self::PIPEDRIVE_API_DOMAIN, $guzzleVersion);
 
@@ -224,7 +211,7 @@ class Pipedrive
      *
      * @return string
      */
-    public function getClientId()
+    public function getClientId(): string
     {
         return $this->clientId;
     }
@@ -234,7 +221,7 @@ class Pipedrive
      *
      * @return string
      */
-    public function getClientSecret()
+    public function getClientSecret(): string
     {
         return $this->clientSecret;
     }
@@ -244,7 +231,7 @@ class Pipedrive
      *
      * @return string
      */
-    public function getRedirectUrl()
+    public function getRedirectUrl(): string
     {
         return $this->redirectUrl;
     }
@@ -252,9 +239,9 @@ class Pipedrive
     /**
      * Get the storage instance.
      *
-     * @return mixed
+     * @return PipedriveTokenStorage
      */
-    public function getStorage()
+    public function getStorage(): PipedriveTokenStorage
     {
         return $this->storage;
     }
@@ -262,7 +249,7 @@ class Pipedrive
     /**
      * Redirect to OAuth.
      */
-    public function OAuthRedirect()
+    public function OAuthRedirect(): never
     {
         $params = [
             'client_id'    => $this->clientId,
@@ -276,9 +263,10 @@ class Pipedrive
     }
 
     /**
-     * Get current OAuth access token object (which includes refreshToken and expiresAt)
+     * Get the current OAuth access token object
+     * (which includes refreshToken and expiresAt)
      */
-    public function getAccessToken()
+    public function getAccessToken(): ?PipedriveToken
     {
         return $this->storage->getToken();
     }
@@ -287,21 +275,24 @@ class Pipedrive
      * OAuth authorization.
      *
      * @param $code
+     * @return void
+     *
+     * @throws GuzzleException
      */
-    public function authorize($code)
+    public function authorize($code): void
     {
         $client = new GuzzleClient([
             'auth' => [
                 $this->getClientId(),
-                $this->getClientSecret()
-            ]
+                $this->getClientSecret(),
+            ],
         ]);
         $response = $client->request('POST', self::PIPEDRIVE_OAUTH_URL . 'oauth/token', [
             'form_params' => [
                 'grant_type'   => 'authorization_code',
                 'code'         => $code,
                 'redirect_uri' => $this->redirectUrl,
-            ]
+            ],
         ]);
         $resBody = json_decode($response->getBody());
 
@@ -320,7 +311,7 @@ class Pipedrive
      * @param $resource
      * @return mixed
      */
-    public function make($resource)
+    public function make($resource): mixed
     {
         $class = $this->resolveClassPath($resource);
 
@@ -333,7 +324,7 @@ class Pipedrive
      * @param $resource
      * @return string
      */
-    protected function resolveClassPath($resource)
+    protected function resolveClassPath($resource): string
     {
         return 'Devio\\Pipedrive\\Resources\\' . Str::studly($resource);
     }
@@ -343,7 +334,7 @@ class Pipedrive
      *
      * @return Request
      */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return new Request($this->getClient());
     }
@@ -353,15 +344,17 @@ class Pipedrive
      *
      * @return Client
      */
-    protected function getClient()
+    protected function getClient(): Client
     {
         if ($this->guzzleVersion >= 6) {
-            return $this->isOauth()
-                ? PipedriveClient::OAuth($this->getBaseURI(), $this->storage, $this)
-                : new PipedriveClient($this->getBaseURI(), $this->token);
-        } else {
-            return new PipedriveClient4($this->getBaseURI(), $this->token);
+            if ($this->isOauth()) {
+                return PipedriveClient::OAuth($this->getBaseURI(), $this->storage, $this);
+            }
+
+            return new PipedriveClient($this->getBaseURI(), $this->token);
         }
+
+        return new PipedriveClient4($this->getBaseURI(), $this->token);
     }
 
     /**
@@ -369,7 +362,7 @@ class Pipedrive
      *
      * @return string
      */
-    public function getBaseURI()
+    public function getBaseURI(): string
     {
         return $this->baseURI;
     }
@@ -379,7 +372,7 @@ class Pipedrive
      *
      * @param string $baseURI
      */
-    public function setBaseURI($baseURI)
+    public function setBaseURI(string $baseURI): void
     {
         $this->baseURI = $baseURI;
     }
@@ -389,7 +382,7 @@ class Pipedrive
      *
      * @param string $token
      */
-    public function setToken($token)
+    public function setToken(string $token): void
     {
         $this->token = $token;
     }
@@ -397,10 +390,11 @@ class Pipedrive
     /**
      * Any reading will return a resource.
      *
-     * @param $name
+     * @param string $name
+     *
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name): mixed
     {
         return $this->make($name);
     }
@@ -408,13 +402,14 @@ class Pipedrive
     /**
      * Methods will also return a resource.
      *
-     * @param $name
-     * @param $arguments
+     * @param string $name
+     * @param        $arguments
+     *
      * @return mixed
      */
-    public function __call($name, $arguments)
+    public function __call(string $name, $arguments): mixed
     {
-        if (! in_array($name, get_class_methods(get_class($this)))) {
+        if (!in_array($name, get_class_methods(static::class))) {
             return $this->{$name};
         }
     }

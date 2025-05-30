@@ -5,30 +5,32 @@ namespace Devio\Pipedrive\Resources\Basics;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Traits\FindsByName;
 use Devio\Pipedrive\Resources\Traits\ListsActivities;
-use Devio\Pipedrive\Resources\Traits\ListsUpdates;
-use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsAttachedFiles;
+use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsPermittedUsers;
+use Devio\Pipedrive\Resources\Traits\ListsUpdates;
+use Illuminate\Support\Arr;
 
 abstract class Entity extends Resource
 {
-    use FindsByName,
-        ListsActivities,
-        ListsAttachedFiles,
-        ListsFollowers,
-        ListsPermittedUsers,
-        ListsUpdates;
+    use FindsByName;
+    use ListsActivities;
+    use ListsAttachedFiles;
+    use ListsFollowers;
+    use ListsPermittedUsers;
+    use ListsUpdates;
 
     /**
      * List the resource associated emails.
      *
-     * @param  int  $id
+     * @param int   $id
      * @param array $options
+     *
      * @return Response
      */
-    public function emails($id, $options = [])
+    public function emails(int $id, array $options = []): Response
     {
-        array_set($options, 'id', $id);
+        Arr::set($options, 'id', $id);
 
         return $this->request->get(':id/mailMessages', $options);
     }
@@ -38,11 +40,12 @@ abstract class Entity extends Resource
      *
      * @param int $id
      * @param int $user_id
+     *
      * @return Response
      */
-    public function addFollower($id, $user_id)
+    public function addFollower(int $id, int $user_id): Response
     {
-        return $this->request->post(':id/followers', compact('id', 'user_id'));
+        return $this->request->post(':id/followers', ['id' => $id, 'user_id' => $user_id]);
     }
 
     /**
@@ -50,11 +53,12 @@ abstract class Entity extends Resource
      *
      * @param int $id
      * @param int $follower_id
+     *
      * @return Response
      */
-    public function deleteFollower($id, $follower_id)
+    public function deleteFollower(int $id, int $follower_id): Response
     {
-        return $this->request->delete(':id/followers/:follower_id', compact('id', 'follower_id'));
+        return $this->request->delete(':id/followers/:follower_id', ['id' => $id, 'follower_id' => $follower_id]);
     }
 
     /**
@@ -62,10 +66,11 @@ abstract class Entity extends Resource
      *
      * @param int $id
      * @param int $merge_with_id
+     *
      * @return Response
      */
-    public function merge($id, $merge_with_id)
+    public function merge(int $id, int $merge_with_id): Response
     {
-        return $this->request->put(':id/merge', compact('id', 'merge_with_id'));
+        return $this->request->put(':id/merge', ['id' => $id, 'merge_with_id' => $merge_with_id]);
     }
 }

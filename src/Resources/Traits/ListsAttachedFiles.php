@@ -3,6 +3,7 @@
 namespace Devio\Pipedrive\Resources\Traits;
 
 use Devio\Pipedrive\Http\Response;
+use Illuminate\Support\Arr;
 
 trait ListsAttachedFiles
 {
@@ -13,9 +14,9 @@ trait ListsAttachedFiles
      * @param array $options Extra parameters
      * @return Response
      */
-    public function attachedFiles($id, $options = [])
+    public function attachedFiles(int $id, array $options = []): Response
     {
-        array_set($options, 'id', $id);
+        Arr::set($options, 'id', $id);
 
         return $this->request->get(':id/files', $options);
     }

@@ -8,8 +8,6 @@ class PushNotifications extends Resource
 {
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
-    protected $disabled = ['deleteBulk'];
+    protected array $disabled = ['deleteBulk'];
 }

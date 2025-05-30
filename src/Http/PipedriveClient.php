@@ -2,40 +2,40 @@
 
 namespace Devio\Pipedrive\Http;
 
+use Devio\Pipedrive\Pipedrive;
+use Devio\Pipedrive\PipedriveTokenStorage;
 use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Arr;
 
 class PipedriveClient implements Client
 {
     /**
      * The Guzzle client instance.
-     *
-     * @var Client
      */
-    protected $client;
+    protected GuzzleClient $client;
 
     /**
      * Oauth flag
-     *
-     * @var bool.
      */
-    protected $isOauth = false;
+    protected bool $isOauth = false;
 
-    const DEFAULT_BODY_FORMAT = RequestOptions::JSON;
+    public const DEFAULT_BODY_FORMAT = RequestOptions::JSON;
 
     /**
      * GuzzleClient constructor.
      *
-     * @param $url
-     * @param $token
+     * @param string $url
+     * @param mixed  $credentials
      */
-    public function __construct($url, $credentials)
+    public function __construct(string $url, $credentials)
     {
-        list($headers, $query) = [[], []];
+        [$headers, $query] = [[], []];
 
-        if (gettype($credentials) == 'object') {
+        if (gettype($credentials) === 'object') {
             $this->isOauth = true;
             $headers['Authorization'] = 'Bearer ' . $credentials->getAccessToken();
         } else {
@@ -47,7 +47,7 @@ class PipedriveClient implements Client
                 'base_uri'        => $url,
                 'allow_redirects' => false,
                 'headers'         => $headers,
-                'query'           => $query
+                'query'           => $query,
             ]
         );
     }
@@ -55,16 +55,20 @@ class PipedriveClient implements Client
     /**
      * Create an OAuth client.
      *
-     * @param $url
-     * @param $storage
-     * @param $pipedrive
+     * @param string                $url
+     * @param PipedriveTokenStorage $storage
+     * @param Pipedrive             $pipedrive
+     *
      * @return PipedriveClient
      */
-    public static function OAuth($url, $storage, $pipedrive)
-    {
+    public static function OAuth(
+        string $url,
+        PipedriveTokenStorage $storage,
+        Pipedrive $pipedrive
+    ): self {
         $token = $storage->getToken();
 
-        if (! $token || ! $token->valid()) {
+        if (!$token instanceof \Devio\Pipedrive\PipedriveToken || !$token->valid()) {
             $pipedrive->OAuthRedirect();
         }
 
@@ -76,15 +80,17 @@ class PipedriveClient implements Client
     /**
      * Perform a GET request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    public function get($url, $parameters = [])
+    public function get(string $url, array $parameters = []): Response
     {
-        $options = $this->getClient()
-                        ->getConfig();
-        array_set($options, 'query', array_merge($parameters, $options['query']));
+        $options = $this->getClient()->getConfig();
+
+        Arr::set($options, 'query', array_merge($parameters, $options['query']));
 
         // For this particular case we have to include the parameters into the
         // URL query. Merging the request default query configuration to the
@@ -95,11 +101,12 @@ class PipedriveClient implements Client
     /**
      * Perform a POST request.
      *
-     * @param $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function post($url, $parameters = [])
+    public function post(string $url, array $parameters = []): Response
     {
         $request = new GuzzleRequest('POST', $url);
         $form = self::DEFAULT_BODY_FORMAT;
@@ -114,7 +121,7 @@ class PipedriveClient implements Client
 
         if (isset($parameters['json'])) {
             $form = RequestOptions::JSON;
-            $parameters = array_except($parameters, RequestOptions::JSON);
+            $parameters = Arr::except($parameters, RequestOptions::JSON);
         }
 
         return $this->execute($request, [$form => $parameters]);
@@ -126,7 +133,7 @@ class PipedriveClient implements Client
      * @param array $parameters
      * @return array
      */
-    protected function multipart(array $parameters)
+    protected function multipart(array $parameters): array
     {
         if (! ($file = $parameters['file']) instanceof \SplFileInfo) {
             throw new \InvalidArgumentException('File must be an instance of \SplFileInfo.');
@@ -135,9 +142,10 @@ class PipedriveClient implements Client
         $result = [];
         $content = file_get_contents($file->getPathname());
 
-        foreach (array_except($parameters, 'file') as $key => $value) {
+        foreach (Arr::except($parameters, 'file') as $key => $value) {
             $result[] = ['name' => $key, 'contents' => (string) $value];
         }
+
         // Will convert every element of the array into a format accepted by the
         // multipart encoding standards. It will also add a special item which
         // includes the file key name, the content of the file and its name.
@@ -149,11 +157,12 @@ class PipedriveClient implements Client
     /**
      * Perform a PUT request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function put($url, $parameters = [])
+    public function put(string $url, array $parameters = []): Response
     {
         $request = new GuzzleRequest('PUT', $url);
 
@@ -163,11 +172,12 @@ class PipedriveClient implements Client
     /**
      * Perform a PATCH request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function patch($url, $parameters = [])
+    public function patch(string $url, array $parameters = []): Response
     {
         $request = new GuzzleRequest('PATCH', $url);
         $form = self::DEFAULT_BODY_FORMAT;
@@ -182,7 +192,7 @@ class PipedriveClient implements Client
 
         if (isset($parameters['json'])) {
             $form = RequestOptions::JSON;
-            $parameters = array_except($parameters, RequestOptions::JSON);
+            $parameters = Arr::except($parameters, RequestOptions::JSON);
         }
 
         return $this->execute($request, [$form => $parameters]);
@@ -191,11 +201,12 @@ class PipedriveClient implements Client
     /**
      * Perform a DELETE request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function delete($url, $parameters = [])
+    public function delete(string $url, array $parameters = []): Response
     {
         $request = new GuzzleRequest('DELETE', $url);
 
@@ -205,13 +216,18 @@ class PipedriveClient implements Client
     /**
      * Execute the request and returns the Response object.
      *
-     * @param GuzzleRequest $request
-     * @param array $options
-     * @param null $client
+     * @param GuzzleRequest            $request
+     * @param array                    $options
+     * @param Client|GuzzleClient|null $client
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    protected function execute(GuzzleRequest $request, array $options = [], $client = null)
-    {
+    protected function execute(
+        GuzzleRequest $request,
+        array $options = [],
+        Client|GuzzleClient|null $client = null
+    ): Response {
         $client = $client ?: $this->getClient();
 
         // We will just execute the given request using the default or given client
@@ -219,23 +235,28 @@ class PipedriveClient implements Client
         // any other info. Both OK and fail will generate a response object.
         try {
             $response = $client->send($request, $options);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
+        } catch (BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
         }
+
         // As there are a few responses that are supposed to perform the
         // download of a file, we will filter them. If found, we will
         // set the file download URL as the response content data.
-        $body = $response->getHeader('location') ?: json_decode($response->getBody());
+        $body = $response->getHeader('location') !== []
+            ? $response->getHeader('location')
+            : json_decode($response->getBody());
 
         return new Response(
-            $response->getStatusCode(), $body, $response->getHeaders()
+            $response->getStatusCode(),
+            $body,
+            $response->getHeaders()
         );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function isOauth()
+    public function isOauth(): bool
     {
         return $this->isOauth;
     }
@@ -243,9 +264,9 @@ class PipedriveClient implements Client
     /**
      * Return the client.
      *
-     * @return Client
+     * @return GuzzleClient
      */
-    public function getClient()
+    public function getClient(): GuzzleClient
     {
         return $this->client;
     }

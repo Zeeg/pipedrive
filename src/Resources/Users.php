@@ -6,33 +6,32 @@ use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 use Devio\Pipedrive\Resources\Traits\FindsByName;
 use Devio\Pipedrive\Resources\Traits\ListsActivities;
-use Devio\Pipedrive\Resources\Traits\ListsUpdates;
 use Devio\Pipedrive\Resources\Traits\ListsFollowers;
 use Devio\Pipedrive\Resources\Traits\ListsPermittedUsers;
+use Devio\Pipedrive\Resources\Traits\ListsUpdates;
 
 class Users extends Resource
 {
-    use FindsByName,
-        ListsActivities,
-        ListsFollowers,
-        ListsPermittedUsers,
-        ListsUpdates;
+    use FindsByName;
+    use ListsActivities;
+    use ListsFollowers;
+    use ListsPermittedUsers;
+    use ListsUpdates;
 
     /**
      * Disabled abstract methods.
-     *
-     * @var array
      */
-    protected $disabled = ['delete', 'deleteBulk'];
+    protected array $disabled = ['delete', 'deleteBulk'];
 
     /**
      * Get the user permissions.
      *
      * @param int $id
+     *
      * @return Response
      */
-    public function permissions($id)
+    public function permissions(int $id): Response
     {
-        return $this->request->get(':id/permissions', compact('id'));
+        return $this->request->get(':id/permissions', ['id' => $id]);
     }
 }

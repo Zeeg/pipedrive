@@ -4,6 +4,7 @@ namespace Devio\Pipedrive\Resources;
 
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
+use Illuminate\Support\Arr;
 
 /**
  * @deprecated
@@ -12,21 +13,20 @@ class SearchResults extends Resource
 {
     /**
      * Enabled abstract methods.
-     *
-     * @var array
      */
-    protected $enabled = [];
+    protected array $enabled = [];
 
     /**
      * Search.
      *
-     * @param       $term
-     * @param array $options
+     * @param string $term
+     * @param array  $options
+     *
      * @return Response
      */
-    public function search($term, $options = [])
+    public function search(string $term, array $options = []): Response
     {
-        array_set($options, 'term', $term);
+        Arr::set($options, 'term', $term);
 
         return $this->request->get('', $options);
     }
@@ -34,15 +34,20 @@ class SearchResults extends Resource
     /**
      * Search from a specific field.
      *
-     * @param       $term
-     * @param       $field_type
-     * @param       $field_key
-     * @param array $options
+     * @param string $term
+     * @param string $field_type
+     * @param string $field_key
+     * @param array  $options
+     *
      * @return Response
      */
-    public function searchFromField($term, $field_type, $field_key, $options = [])
-    {
-        $options = array_merge(compact('term', 'field_type', 'field_key'), $options);
+    public function searchFromField(
+        string $term,
+        string $field_type,
+        string $field_key,
+        array $options = []
+    ): Response {
+        $options = array_merge(['term' => $term, 'field_type' => $field_type, 'field_key' => $field_key], $options);
 
         return $this->request->get('field', $options);
     }

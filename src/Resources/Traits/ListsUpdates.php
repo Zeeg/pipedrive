@@ -3,6 +3,7 @@
 namespace Devio\Pipedrive\Resources\Traits;
 
 use Devio\Pipedrive\Http\Response;
+use Illuminate\Support\Arr;
 
 trait ListsUpdates
 {
@@ -11,11 +12,12 @@ trait ListsUpdates
      *
      * @param int   $id
      * @param array $options
+     *
      * @return Response
      */
-    public function updates($id, $options = [])
+    public function updates(int $id, array $options = []): Response
     {
-        array_set($options, 'id', $id);
+        Arr::set($options, 'id', $id);
 
         return $this->request->get(':id/flow', $options);
     }

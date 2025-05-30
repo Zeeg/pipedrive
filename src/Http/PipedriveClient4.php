@@ -4,44 +4,41 @@ namespace Devio\Pipedrive\Http;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Post\PostFile;
-// use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use GuzzleHttp\Message\Request as GuzzleRequest;
 use GuzzleHttp\Exception\BadResponseException;
+// use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Message\Request as GuzzleRequest;
+use GuzzleHttp\Post\PostFile;
 use Psr\Http\Message\RequestInterface;
 
 class PipedriveClient4 implements Client
 {
     /**
      * The Guzzle client instance.
-     *
-     * @var GuzzleClient
      */
-    protected $client;
+    protected GuzzleClient $client;
 
-    protected $queryDefaults = [];
+    protected array $queryDefaults = [];
 
     /**
      * Oauth flag
-     *
-     * @var bool.
      */
-    protected $isOauth = false;
+    protected bool $isOauth = false;
 
     /**
      * GuzzleClient constructor.
      *
-     * @param $url
+     * @param string $url
      * @param $token
      */
-    public function __construct($url, $token)
+    public function __construct(string $url, $token)
     {
         $this->client = new GuzzleClient(
             [
                 'base_url' => $url,
                 'defaults' => [
                     'query' => ['api_token' => $token],
-                ]
+                ],
             ]
         );
     }
@@ -49,11 +46,13 @@ class PipedriveClient4 implements Client
     /**
      * Perform a GET request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    public function get($url, $parameters = [])
+    public function get(string $url, array $parameters = []): Response
     {
         $request = $this->getClient()->createRequest('GET', $url, ['query' => $parameters]);
 
@@ -63,11 +62,13 @@ class PipedriveClient4 implements Client
     /**
      * Perform a POST request.
      *
-     * @param $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    public function post($url, $parameters = [])
+    public function post(string $url, array $parameters = []): Response
     {
         // If any file key is found, we will assume we have to convert the data
         // into the multipart array structure. Otherwise, we will perform the
@@ -87,7 +88,7 @@ class PipedriveClient4 implements Client
      * @param array $parameters
      * @return array
      */
-    protected function multipart(array $parameters)
+    protected function multipart(array $parameters): array
     {
         if (! ($file = $parameters['file']) instanceof \SplFileInfo) {
             throw new \InvalidArgumentException('File must be an instance of \SplFileInfo.');
@@ -101,11 +102,13 @@ class PipedriveClient4 implements Client
     /**
      * Perform a PUT request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    public function put($url, $parameters = [])
+    public function put(string $url, array $parameters = []): Response
     {
         $request = $this->getClient()->createRequest('PUT', $url, ['body' => $parameters]);
 
@@ -117,9 +120,11 @@ class PipedriveClient4 implements Client
      *
      * @param       $url
      * @param array $parameters
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    public function delete($url, $parameters = [])
+    public function delete($url, array $parameters = []): Response
     {
         $request = $this->getClient()->createRequest('DELETE', $url, ['body' => $parameters]);
 
@@ -129,36 +134,45 @@ class PipedriveClient4 implements Client
     /**
      * Execute the request and returns the Response object.
      *
-     * @param GuzzleRequest $request
-     * @param null $client
+     * @param GuzzleRequest     $request
+     * @param GuzzleClient|null $client
+     *
      * @return Response
+     * @throws GuzzleException
      */
-    protected function execute(GuzzleRequest $request, $client = null)
-    {
-        $client = $client ?: $this->getClient();
+    protected function execute(
+        GuzzleRequest $request,
+        ?GuzzleClient $client = null
+    ): Response {
+        $client = $client instanceof \GuzzleHttp\Client ? $client : $this->getClient();
 
         // We will just execute the given request using the default or given client
         // and with the passed options wich may contain the query, body vars, or
         // any other info. Both OK and fail will generate a response object.
         try {
             $response = $client->send($request);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
+        } catch (BadResponseException $badResponseException) {
+            $response = $badResponseException->getResponse();
         }
+
         // As there are a few responses that are supposed to perform the
         // download of a file, we will filter them. If found, we will
         // set the file download URL as the response content data.
-        $body = $response->getHeader('location') ?: json_decode($response->getBody());
+        $body = $response->getHeader('location') !== []
+            ? $response->getHeader('location')
+            : json_decode($response->getBody());
 
         return new Response(
-            $response->getStatusCode(), $body, $response->getHeaders()
+            $response->getStatusCode(),
+            $body,
+            $response->getHeaders()
         );
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    public function isOauth()
+    public function isOauth(): bool
     {
         return $this->isOauth;
     }
@@ -168,7 +182,7 @@ class PipedriveClient4 implements Client
      *
      * @return GuzzleClient
      */
-    public function getClient()
+    public function getClient(): GuzzleClient
     {
         return $this->client;
     }

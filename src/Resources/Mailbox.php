@@ -10,23 +10,25 @@ class Mailbox extends Resource
     /**
      * Get the Mail threads details by ID.
      *
-     * @param int $id   Mail threads ID to find.
-	 * @return Response
+     * @param int $id Mail threads ID to find.
+     *
+     * @return Response
      */
-    public function find($id)
+    public function find(int $id): Response
     {
-        return $this->request->get('mailThreads/:id', compact('id'));
+        return $this->request->get('mailThreads/:id', ['id' => $id]);
     }
 
     /**
      * Delete Mail threads by ID.
      *
-     * @param int $id   Mail threads ID to delete.
-	 * @return Response
+     * @param int $id Mail threads ID to delete.
+     *
+     * @return Response
      */
-    public function delete($id)
+    public function delete(int $id): Response
     {
-        return $this->request->delete('mailThreads/:id', compact('id'));
+        return $this->request->delete('mailThreads/:id', ['id' => $id]);
     }
 
     /**
@@ -34,11 +36,13 @@ class Mailbox extends Resource
      *
      * @param int   $id
      * @param array $values
-	 * @return Response
+     *
+     * @return Response
      */
-    public function update($id, array $values)
+    public function update(int $id, array $values): Response
     {
         $values['id'] = $id;
+
         return $this->request->put('mailThreads/:id', $values);
     }
 
@@ -47,35 +51,39 @@ class Mailbox extends Resource
      *
      * @param string $folder
      * @param array  $options
-	 * @return Response 
+     *
+     * @return Response
      */
-    public function mailThreads($folder, array $options = [])
+    public function mailThreads(string $folder, array $options = []): Response
     {
         $options['folder'] = $folder;
 
         return $this->request->get('mailThreads', $options);
     }
-    
+
     /**
      * Get mail messages inside specified mail thread by ID.
      *
-     * @param int $id   Mail threads ID to find messages.
-	 * @return Response
+     * @param int   $id Mail threads ID to find messages.
+     * @param array $params
+     *
+     * @return Response
      */
-    public function mailMessages($id, $params=[])
+    public function mailMessages(int $id, array $params = []): Response
     {
         $params['id'] = $id;
+
         return $this->request->get('mailThreads/:id/mailMessages', $params);
     }
 
     /**
      * Get a specific email message by email ID.
      *
-     * @param $id   email ID to find a message.
-	 * @return Response
+     * @param mixed $id Email ID to find a message.
+     * @return Response
      */
-    public function mailSpecificMessage($id)
+    public function mailSpecificMessage(mixed $id): Response
     {
-        return $this->request->get('mailMessages/:id', compact('id'));    
+        return $this->request->get('mailMessages/:id', ['id' => $id]);
     }
 }

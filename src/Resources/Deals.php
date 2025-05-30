@@ -4,29 +4,28 @@ namespace Devio\Pipedrive\Resources;
 
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Entity;
-use Devio\Pipedrive\Resources\Traits\Searches;
-use Devio\Pipedrive\Resources\Traits\ListsProducts;
 use Devio\Pipedrive\Resources\Traits\ListsAttachedFiles;
+use Devio\Pipedrive\Resources\Traits\ListsProducts;
+use Devio\Pipedrive\Resources\Traits\Searches;
+use Illuminate\Support\Arr;
 
 class Deals extends Entity
 {
-    use ListsProducts, ListsAttachedFiles, Searches;
+    use ListsAttachedFiles;
+    use ListsProducts;
+    use Searches;
 
     /**
-     * 
      * Get the deals summary
-     * 
+     *
      * @param array $options
-     * 
+     *
      * @return Response
-     * 
-    */
-
-    public function summary($options = [])
+     */
+    public function summary(array $options = []): Response
     {
 
         return $this->request->get('summary', $options);
-
     }
 
     /**
@@ -39,10 +38,15 @@ class Deals extends Entity
      * @param array  $options
      * @return Response
      */
-    public function timeline($start_date, $interval, $amount, $field_key, $options = [])
-    {
+    public function timeline(
+        string $start_date,
+        string $interval,
+        int $amount,
+        string $field_key,
+        array $options = []
+    ): Response {
         $options = array_merge(
-            compact('start_date', 'interval', 'amount', 'field_key'),
+            ['start_date' => $start_date, 'interval' => $interval, 'amount' => $amount, 'field_key' => $field_key],
             $options
         );
 
@@ -54,11 +58,12 @@ class Deals extends Entity
      *
      * @param int $id
      * @param int $person_id
+     *
      * @return Response
      */
-    public function addParticipant($id, $person_id)
+    public function addParticipant(int $id, int $person_id): Response
     {
-        return $this->request->post(':id/participants', compact('id', 'person_id'));
+        return $this->request->post(':id/participants', ['id' => $id, 'person_id' => $person_id]);
     }
 
     /**
@@ -66,11 +71,12 @@ class Deals extends Entity
      *
      * @param int   $id
      * @param array $options
+     *
      * @return Response
      */
-    public function participants($id, $options = [])
+    public function participants(int $id, array $options = []): Response
     {
-        array_set($options, 'id', $id);
+        Arr::set($options, 'id', $id);
 
         return $this->request->get(':id/participants', $options);
     }
@@ -80,11 +86,12 @@ class Deals extends Entity
      *
      * @param int $id
      * @param int $deal_participant_id
+     *
      * @return Response
      */
-    public function deleteParticipant($id, $deal_participant_id)
+    public function deleteParticipant(int $id, int $deal_participant_id): Response
     {
-        return $this->request->delete(':id/participants/:deal_participant_id', compact('id', 'deal_participant_id'));
+        return $this->request->delete(':id/participants/:deal_participant_id', ['id' => $id, 'deal_participant_id' => $deal_participant_id]);
     }
 
     /**
@@ -97,10 +104,15 @@ class Deals extends Entity
      * @param array $options
      * @return Response
      */
-    public function addProduct($id, $product_id, $item_price, $quantity, $options = [])
-    {
+    public function addProduct(
+        int $id,
+        int $product_id,
+        $item_price,
+        int $quantity,
+        array $options = []
+    ): Response {
         $options = array_merge(
-            compact('id', 'product_id', 'item_price', 'quantity'),
+            ['id' => $id, 'product_id' => $product_id, 'item_price' => $item_price, 'quantity' => $quantity],
             $options
         );
 
@@ -117,10 +129,15 @@ class Deals extends Entity
      * @param array $options
      * @return Response
      */
-    public function updateProduct($id, $deal_product_id, $item_price, $quantity, $options = [])
-    {
+    public function updateProduct(
+        int $id,
+        int $deal_product_id,
+        $item_price,
+        int $quantity,
+        array $options = []
+    ): Response {
         $options = array_merge(
-            compact('id', 'deal_product_id', 'item_price', 'quantity'),
+            ['id' => $id, 'deal_product_id' => $deal_product_id, 'item_price' => $item_price, 'quantity' => $quantity],
             $options
         );
 
@@ -132,13 +149,14 @@ class Deals extends Entity
      *
      * @param int $id
      * @param int $product_attachment_id
+     *
      * @return Response
      */
-    public function deleteProduct($id, $product_attachment_id)
+    public function deleteProduct(int $id, int $product_attachment_id): Response
     {
         return $this->request->delete(
             ':id/products/:product_attachment_id',
-            compact('id', 'product_attachment_id')
+            ['id' => $id, 'product_attachment_id' => $product_attachment_id]
         );
     }
 
@@ -146,32 +164,35 @@ class Deals extends Entity
      * Duplicate a deal.
      *
      * @param int $id The deal id
+     *
      * @return Response
      */
-    public function duplicate($id)
+    public function duplicate(int $id): Response
     {
-        return $this->request->post(':id/duplicate', compact('id'));
+        return $this->request->post(':id/duplicate', ['id' => $id]);
     }
-    
+
     /**
      * Get the email messages for a deal.
-     * 
+     *
      * @param int $id The deal id
+     *
      * @return Response
      */
-    public function mailMessages($id)
+    public function mailMessages(int $id): Response
     {
-        return $this->request->get(':id/mailMessages', compact('id'));
+        return $this->request->get(':id/mailMessages', ['id' => $id]);
     }
 
     /**
      * Get the files for a deal.
      *
      * @param int $id The deal id
+     *
      * @return Response
      */
-    public function files($id)
+    public function files(int $id): Response
     {
-        return $this->request->get(':id/files', compact('id'));
+        return $this->request->get(':id/files', ['id' => $id]);
     }
 }
