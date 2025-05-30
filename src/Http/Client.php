@@ -7,43 +7,47 @@ interface Client
     /**
      * Perform a GET request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function get($url, $parameters = []);
+    public function get(string $url, array $parameters = []): Response;
 
     /**
      * Perform a POST request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function post($url, $parameters = []);
+    public function post(string $url, array $parameters = []): Response;
 
     /**
      * Perform a PUT request.
      *
-     * @param       $url
+     * @param string $url
      * @param array $parameters
+     *
      * @return Response
      */
-    public function put($url, $parameters = []);
+    public function put(string $url, array $parameters = []): Response;
 
     /**
      * Perform a DELETE request.
      *
-     * @param       $url
-     * @param array $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return Response
      */
-    public function delete($url, $parameters = []);
+    public function delete(string $url, array $parameters = []): Response;
 
     /**
      * Check if the client is configured for OAuth.
      *
      * @return bool
      */
-    public function isOauth();
+    public function isOauth(): bool;
 }

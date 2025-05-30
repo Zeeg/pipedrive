@@ -3,6 +3,7 @@
 namespace Devio\Pipedrive;
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\GuzzleException;
 
 class PipedriveToken
 {
@@ -11,21 +12,21 @@ class PipedriveToken
      *
      * @var string
      */
-    protected $accessToken;
+    protected string $accessToken;
 
     /**
      * The expiry date.
      *
      * @var string
      */
-    protected $expiresAt;
+    protected string $expiresAt;
 
     /**
      * The refresh token.
      *
      * @var string
      */
-    protected $refreshToken;
+    protected string $refreshToken;
 
     /**
      * PipedriveToken constructor.
@@ -44,7 +45,7 @@ class PipedriveToken
      *
      * @return string
      */
-    public function getAccessToken()
+    public function getAccessToken(): string
     {
         return $this->accessToken;
     }
@@ -54,7 +55,7 @@ class PipedriveToken
      *
      * @return string
      */
-    public function expiresAt()
+    public function expiresAt(): string
     {
         return $this->expiresAt;
     }
@@ -64,7 +65,7 @@ class PipedriveToken
      *
      * @return string
      */
-    public function getRefreshToken()
+    public function getRefreshToken(): string
     {
         return $this->refreshToken;
     }
@@ -74,17 +75,19 @@ class PipedriveToken
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
-        return ! empty($this->accessToken);
+        return !empty($this->accessToken);
     }
 
     /**
      * Refresh the token only if needed.
      *
      * @param $pipedrive
+     *
+     * @throws GuzzleException
      */
-    public function refreshIfNeeded($pipedrive)
+    public function refreshIfNeeded($pipedrive): void
     {
         if (! $this->needsRefresh()) {
             return;
@@ -120,7 +123,7 @@ class PipedriveToken
      *
      * @return bool
      */
-    public function needsRefresh()
+    public function needsRefresh(): bool
     {
         return (int) $this->expiresAt - time() < 1;
     }

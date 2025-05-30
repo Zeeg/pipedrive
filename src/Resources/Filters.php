@@ -11,5 +11,5 @@ class Filters extends Resource
      *
      * @var array
      */
-    protected $disabled = ['deleteBulk'];
+    protected array $disabled = ['deleteBulk'];
 }

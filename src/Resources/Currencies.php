@@ -12,5 +12,5 @@ class Currencies extends Resource
      *
      * @var array
      */
-    protected $enabled = ['all'];
+    protected array $enabled = ['all'];
 }

@@ -2,7 +2,8 @@
 
 namespace Devio\Pipedrive;
 
-use Devio\Pipedrive\Exceptions\TokenNotSetException;
+use Illuminate\Support\Arr;
+use InvalidArgumentException;
 
 class Builder
 {
@@ -11,41 +12,42 @@ class Builder
      *
      * @var string
      */
-    protected $base = Pipedrive::PIPEDRIVE_API_URL . '{endpoint}';
+    protected string $base = Pipedrive::PIPEDRIVE_API_URL . '{endpoint}';
 
     /**
      * Resource name.
      *
      * @var string
      */
-    protected $resource = '';
+    protected string $resource = '';
 
     /**
      * Full URI without resource.
      *
      * @var string
      */
-    protected $target = '';
+    protected string $target = '';
 
     /**
      * The API token.
      *
      * @var string
      */
-    protected $token;
+    protected string $token;
 
     /**
      * OAuth enabled or disabled.
      */
-    protected $isOauth = false;
+    protected bool $isOauth = false;
 
     /**
      * Get the name of the URI parameters.
      *
      * @param string $target
+     *
      * @return array
      */
-    public function getParameters($target = '')
+    public function getParameters(string $target = ''): array
     {
         if (empty($target)) {
             $target = $this->getTarget();
@@ -53,7 +55,7 @@ class Builder
 
         preg_match_all('/:\w+/', $target, $result);
 
-        return str_replace(':', '', array_flatten($result));
+        return str_replace(':', '', Arr::flatten($result));
     }
 
     /**
@@ -64,9 +66,12 @@ class Builder
      * 'organizations/55'
      *
      * @param array $options
-     * @return mixed
+     *
+     * @return string
+     *
+     * @throws InvalidArgumentException
      */
-    public function buildEndpoint($options = [])
+    public function buildEndpoint(array $options = []): string
     {
         $endpoint = $this->getEndpoint();
 
@@ -82,7 +87,7 @@ class Builder
                 if (isset($value->id)) {
                     $value = $value->id;
                 } else {
-                    continue;   
+                    continue;
                 }
             }
 
@@ -90,7 +95,7 @@ class Builder
         }
 
         if (count($this->getParameters($endpoint))) {
-            throw new \InvalidArgumentException('The URI contains unassigned params.');
+            throw new InvalidArgumentException('The URI contains unassigned params.');
         }
 
         return $endpoint;
@@ -99,7 +104,7 @@ class Builder
     /**
      * Check if OAuth is enabled.
      */
-    public function isOauth()
+    public function isOauth(): bool
     {
         return $this->isOauth;
     }
@@ -107,7 +112,7 @@ class Builder
     /**
      * Get a builder instance prepared for OAuth.
      */
-    public static function OAuth()
+    public static function OAuth(): self
     {
         $instance = new self();
 
@@ -121,7 +126,6 @@ class Builder
      * Get the full URI with the endpoint if any.
      *
      * @return string
-     * @throws TokenNotSetException
      */
     protected function getEndpoint()
     {
@@ -131,22 +135,21 @@ class Builder
                 $result = $this->getResource() . '/' . $result;
         }
 
-        $result = rtrim($result, '/');
-
-        return $result;
+        return rtrim($result, '/');
     }
 
     /**
      * Get the options that are not replaced in the URI.
      *
      * @param array $options
+     *
      * @return array
      */
-    public function getQueryVars($options = [])
+    public function getQueryVars(array $options = []): array
     {
         $vars = $this->getParameters();
 
-        return array_except($options, $vars);
+        return Arr::except($options, $vars);
     }
 
     /**
@@ -154,7 +157,7 @@ class Builder
      *
      * @return string
      */
-    public function getResource()
+    public function getResource(): string
     {
         return $this->resource;
     }
@@ -164,7 +167,7 @@ class Builder
      *
      * @param string $name
      */
-    public function setResource($name)
+    public function setResource(string $name): void
     {
         $this->resource = $name;
     }
@@ -174,7 +177,7 @@ class Builder
      *
      * @return string
      */
-    public function getTarget()
+    public function getTarget(): string
     {
         return $this->target;
     }
@@ -184,7 +187,7 @@ class Builder
      *
      * @param string $target
      */
-    public function setTarget($target)
+    public function setTarget(string $target): void
     {
         $this->target = $target;
     }
@@ -192,9 +195,9 @@ class Builder
     /**
      * Set the application token.
      *
-     * @param $token
+     * @param string $token
      */
-    public function setToken($token)
+    public function setToken(string $token): void
     {
         $this->token = $token;
     }
@@ -204,7 +207,7 @@ class Builder
      *
      * @return string
      */
-    public function getBase()
+    public function getBase(): string
     {
         return $this->base;
     }

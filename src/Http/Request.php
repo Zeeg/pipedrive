@@ -20,14 +20,14 @@ class Request
      *
      * @var Client
      */
-    protected $client;
+    protected Client $client;
 
     /**
      * The Builder instance.
      *
      * @var Builder
      */
-    protected $builder;
+    protected Builder $builder;
 
     /**
      * Request constructor.
@@ -43,12 +43,15 @@ class Request
     /**
      * Prepare and run the query.
      *
-     * @param       $type
-     * @param       $target
-     * @param array $options
-     * @return mixed
+     * @param string $type
+     * @param string $target
+     * @param array  $options
+     *
+     * @return Response
+     * @throws ItemNotFoundException
+     * @throws PipedriveException
      */
-    protected function performRequest($type, $target, $options = [])
+    protected function performRequest(string $type, string $target, array $options = []): Response
     {
         $this->builder->setTarget($target);
 
@@ -64,12 +67,16 @@ class Request
     /**
      * Execute the query against the HTTP client.
      *
-     * @param $type
-     * @param $endpoint
-     * @param $query
-     * @return mixed
+     * @param string $type
+     * @param string $endpoint
+     * @param array  $query
+     *
+     * @return Response
+     *
+     * @throws ItemNotFoundException
+     * @throws PipedriveException
      */
-    protected function executeRequest($type, $endpoint, $query = [])
+    protected function executeRequest(string $type, string $endpoint, array $query = []): Response
     {
         return $this->handleResponse(
             call_user_func_array([$this->client, $type], [$endpoint, $query])
@@ -80,11 +87,13 @@ class Request
      * Handling the server response.
      *
      * @param Response $response
+     *
      * @return Response
+     *
      * @throws ItemNotFoundException
      * @throws PipedriveException
      */
-    protected function handleResponse(Response $response)
+    protected function handleResponse(Response $response): Response
     {
         $content = $response->getContent();
 
@@ -93,19 +102,19 @@ class Request
         // inludes the success variable, we will return the response data.
         if (!isset($content) || !($response->getStatusCode() == 302 || $response->isSuccess())) {
             if ($response->getStatusCode() == 404) {
-                throw new ItemNotFoundException(isset($content->error) ? $content->error : "Error unknown.");
+                throw new ItemNotFoundException($content->error ?? "Error unknown.");
             }
 
             if ($response->getStatusCode() == 401) {
                 throw new PipedriveException(
-                    isset($content->error) ? $content->error : 'Unauthorized',
+                    $content->error ?? 'Unauthorized',
                     $response->getStatusCode()
                 );
             }
 
             if ($response->getStatusCode() == 403) {
                 throw new PipedriveException(
-                    isset($content->error) ? $content->error : 'Forbidden',
+                    $content->error ?? 'Forbidden',
                     $response->getStatusCode()
                 );
             }
@@ -119,21 +128,20 @@ class Request
     /**
      * Throws PipedriveException with message depending on content.
      *
-     * @param string $content
-     * @throws \Devio\Pipedrive\Exceptions\PipedriveException
+     * @param mixed $content
+     *
+     * @throws PipedriveException
      */
-    protected function throwPipedriveException($content)
+    protected function throwPipedriveException(mixed $content)
     {
-        if (!isset($content->error))
-        {
+        if ((!$content instanceof \stdClass) || !isset($content->error)) {
             throw new PipedriveException('Error unknown.');
         }
-        
-        if (property_exists($content->error, 'message'))
-        {
+
+        if (property_exists($content->error, 'message')) {
             throw new PipedriveException($content->error->message);
         }
-        
+
         throw new PipedriveException($content->error);
     }
 
@@ -142,7 +150,7 @@ class Request
      *
      * @param string $resource
      */
-    public function setResource($resource)
+    public function setResource(string $resource): void
     {
         $this->builder->setResource($resource);
     }
@@ -152,7 +160,7 @@ class Request
      *
      * @param string $token
      */
-    public function setToken($token)
+    public function setToken(string $token): void
     {
         $this->builder->setToken($token);
     }
@@ -160,19 +168,22 @@ class Request
     /**
      * Pointing request operations to the request performer.
      *
-     * @param       $name
-     * @param array $args
-     * @return Response
+     * @param string $name
+     * @param array  $args
+     *
+     * @return Response|null
      */
-    public function __call($name, $args = [])
+    public function __call(string $name, array $args = []): ?Response
     {
         if (in_array($name, ['get', 'post', 'put', 'patch', 'delete'])) {
             $options = !empty($args[1]) ? $args[1] : [];
 
             // Will pass the function name as the request type. The second argument
             // is the URI passed to the method. The third parameter will include
-            // the request option values array which are stored in the index 1.
+            // the request option values array that is stored in index 1.
             return $this->performRequest($name, $args[0], $options);
         }
+
+        return null;
     }
 }

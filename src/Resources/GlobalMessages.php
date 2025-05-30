@@ -12,5 +12,5 @@ class GlobalMessages extends Resource
      *
      * @var array
      */
-    protected $enabled = ['all', 'delete'];
+    protected array $enabled = ['all', 'delete'];
 }

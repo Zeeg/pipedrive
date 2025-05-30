@@ -11,5 +11,5 @@ class Recents extends Resource
      *
      * @var array
      */
-    protected $enabled = ['all'];
+    protected array $enabled = ['all'];
 }

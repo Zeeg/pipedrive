@@ -12,5 +12,5 @@ class ActivityTypes extends Resource
      *
      * @var array
      */
-    protected $enabled = ['all', 'deleteBulk'];
+    protected array $enabled = ['all', 'deleteBulk'];
 }

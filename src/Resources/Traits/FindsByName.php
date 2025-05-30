@@ -11,10 +11,11 @@ trait FindsByName
      *
      * @param string $term
      * @param array  $options
-     * @deprecated   Use search method instead
-	 * @return Response
-     */
-    public function findByName($term, $options = [])
+     *
+     * @return Response
+     * @deprecated   Use the search method instead
+	 */
+    public function findByName(string $term, array $options = []): Response
     {
         $options['term'] = $term;
 

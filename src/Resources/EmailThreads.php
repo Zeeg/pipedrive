@@ -2,6 +2,7 @@
 
 namespace Devio\Pipedrive\Resources;
 
+use Illuminate\Support\Arr;
 use Devio\Pipedrive\Http\Response;
 use Devio\Pipedrive\Resources\Basics\Resource;
 
@@ -12,18 +13,19 @@ class EmailThreads extends Resource
      *
      * @var array
      */
-    protected $disabled = ['add'];
+    protected array $disabled = ['add'];
 
     /**
      * Get the messages inside a thread.
      *
      * @param int   $id
      * @param array $options
+     *
      * @return Response
      */
-    public function messages($id, $options = [])
+    public function messages(int $id, array $options = []): Response
     {
-        array_set($options, 'id', $id);
+        Arr::set($options, 'id', $id);
 
         return $this->request->get(':id/messages', $options);
     }

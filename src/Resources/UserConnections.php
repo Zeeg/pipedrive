@@ -12,5 +12,5 @@ class UserConnections extends Resource
      *
      * @var array
      */
-    protected $enabled = ['find'];
+    protected array $enabled = ['find'];
 }

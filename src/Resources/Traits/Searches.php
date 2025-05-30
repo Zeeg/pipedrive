@@ -9,10 +9,11 @@ trait Searches
     /**
      * @param string $term
      * @param array  $fields
+     * @param array  $options
      *
      * @return Response
      */
-    public function search($term, $fields = [], $options = [])
+    public function search(string $term, array $fields = [], array $options = []): Response
     {
         $options['term'] = $term;
         $options['fields'] = $fields;

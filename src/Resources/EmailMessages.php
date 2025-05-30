@@ -11,5 +11,5 @@ class EmailMessages extends Resource
      *
      * @var array
      */
-    protected $enabled = ['find', 'update', 'delete', 'deleteBulk'];
+    protected array $enabled = ['find', 'update', 'delete', 'deleteBulk'];
 }

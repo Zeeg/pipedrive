@@ -2,11 +2,9 @@
 
 namespace Devio\Pipedrive;
 
-use Devio\Pipedrive\PipedriveToken;
-
 interface PipedriveTokenStorage
 {
-    public function setToken(PipedriveToken $token);
+    public function setToken(PipedriveToken $token): void;
 
-    public function getToken();
+    public function getToken(): ?PipedriveToken;
 }

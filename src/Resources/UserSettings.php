@@ -11,5 +11,5 @@ class UserSettings extends Resource
      *
      * @var array
      */
-    protected $enabled = ['find'];
+    protected array $enabled = ['find'];
 }
