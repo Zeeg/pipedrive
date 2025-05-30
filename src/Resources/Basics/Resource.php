@@ -101,6 +101,20 @@ abstract class Resource
     }
 
     /**
+     * Patch an entity by ID.
+     *
+     * @param int   $id
+     * @param array $values
+     * @return Response
+     */
+    public function patch($id, array $values)
+    {
+        array_set($values, 'id', $id);
+
+        return $this->request->patch(':id', $values);
+    }
+
+    /**
      * Delete an entity by ID.
      *
      * @param int $id

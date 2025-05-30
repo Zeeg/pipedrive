@@ -120,6 +120,12 @@ use GuzzleHttp\Client as GuzzleClient;
  */
 class Pipedrive
 {
+    public const PIPEDRIVE_DOMAIN = 'pipedrive.com';
+    public const API_VERSION = 'v1';
+    public const PIPEDRIVE_API_DOMAIN = 'https://api.' . self::PIPEDRIVE_DOMAIN .'/';
+    public const PIPEDRIVE_API_URL = self::PIPEDRIVE_API_DOMAIN . self::API_VERSION . '/';
+    public const PIPEDRIVE_OAUTH_URL = 'https://oauth.' . self::PIPEDRIVE_DOMAIN . '/';
+
     /**
      * The base URI.
      *
@@ -181,7 +187,7 @@ class Pipedrive
      *
      * @param $token
      */
-    public function __construct($token = '', $uri = 'https://api.pipedrive.com/v1/', $guzzleVersion = 6)
+    public function __construct($token = '', $uri = self::PIPEDRIVE_API_URL, $guzzleVersion = 6)
     {
         $this->token = $token;
         $this->baseURI = $uri;
@@ -200,7 +206,7 @@ class Pipedrive
     {
         $guzzleVersion = isset($config['guzzleVersion']) ? $config['guzzleVersion'] : 6;
 
-        $new = new self('oauth', 'https://api.pipedrive.com/', $guzzleVersion);
+        $new = new self('oauth', self::PIPEDRIVE_API_DOMAIN, $guzzleVersion);
 
         $new->isOauth = true;
 
@@ -264,7 +270,7 @@ class Pipedrive
             'redirect_uri' => $this->redirectUrl,
         ];
         $query = http_build_query($params);
-        $url = 'https://oauth.pipedrive.com/oauth/authorize?' . $query;
+        $url = self::PIPEDRIVE_OAUTH_URL . 'oauth/authorize?' . $query;
         header('Location: ' . $url);
         exit;
     }
@@ -290,7 +296,7 @@ class Pipedrive
                 $this->getClientSecret()
             ]
         ]);
-        $response = $client->request('POST', 'https://oauth.pipedrive.com/oauth/token', [
+        $response = $client->request('POST', self::PIPEDRIVE_OAUTH_URL . 'oauth/token', [
             'form_params' => [
                 'grant_type'   => 'authorization_code',
                 'code'         => $code,

@@ -11,7 +11,7 @@ class Builder
      *
      * @var string
      */
-    protected $base = 'https://api.pipedrive.com/v1/{endpoint}';
+    protected $base = Pipedrive::PIPEDRIVE_API_URL . '{endpoint}';
 
     /**
      * Resource name.
@@ -111,7 +111,7 @@ class Builder
     {
         $instance = new self();
 
-        $instance->base = 'https://api.pipedrive.com/{endpoint}';
+        $instance->base = Pipedrive::PIPEDRIVE_API_DOMAIN . '{endpoint}';
         $instance->isOauth = true;
 
         return $instance;
@@ -128,8 +128,10 @@ class Builder
         $result = $this->getTarget();
 
         if (!empty($this->getResource())) {
-            $result = $this->getResource() . '/' . $result;
+                $result = $this->getResource() . '/' . $result;
         }
+
+        $result = rtrim($result, '/');
 
         return $result;
     }

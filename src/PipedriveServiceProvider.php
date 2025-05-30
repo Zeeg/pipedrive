@@ -21,7 +21,7 @@ class PipedriveServiceProvider extends ServiceProvider
 
         $this->app->singleton(Pipedrive::class, function ($app) {
             $token = $app['config']->get('services.pipedrive.token');
-            $uri = $app['config']->get('services.pipedrive.uri') ?: 'https://api.pipedrive.com/v1/';
+            $uri = $app['config']->get('services.pipedrive.uri') ?: Pipedrive::PIPEDRIVE_API_URL;
             $guzzleVersion = $app['config']->get('services.pipedrive.guzzle_version') ?: 6;
 
             if (! $token) {

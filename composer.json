@@ -7,6 +7,12 @@
         {
             "name": "Israel Ortuño",
             "email": "ai.ortuno@gmail.com"
+        },
+        {
+            "name": "Fabrizio Ciacchi",
+            "email": "fabrizio@zeeg.me",
+            "company": "Zeeg",
+            "homepage": "https://github.com/fciacchi"
         }
     ],
     "require": {
@@ -15,7 +21,7 @@
         "laravel/helpers": "^1.0"
     },
     "require-dev": {
-        "phpspec/phpspec": "^2.4",
+        "phpspec/phpspec": "^7.6.0",
         "symfony/var-dumper": "^2.7"
     },
     "autoload": {

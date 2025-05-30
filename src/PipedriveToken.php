@@ -97,7 +97,7 @@ class PipedriveToken
             ]
         ]);
 
-        $response = $client->request('POST', 'https://oauth.pipedrive.com/oauth/token', [
+        $response = $client->request('POST', Pipedrive::PIPEDRIVE_OAUTH_URL . 'oauth/token', [
             'form_params' => [
                 'grant_type'   => 'refresh_token',
                 'refresh_token' => $this->refreshToken
