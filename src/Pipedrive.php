@@ -156,7 +156,7 @@ class Pipedrive
 
     public function isOauth(): bool
     {
-        return $this->isOauth;
+        return $this->isOauth ?? false;
     }
 
     /**

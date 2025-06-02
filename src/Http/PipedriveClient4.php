@@ -172,9 +172,9 @@ class PipedriveClient4 implements Client
     /**
      * {@inheritDoc}
      */
-    public function isOauth(): bool
+    public function isOauth(): ?bool
     {
-        return $this->isOauth;
+        return $this->isOauth ?? false;
     }
 
     /**
