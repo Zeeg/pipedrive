@@ -25,7 +25,8 @@ class Request
      *
      * @param Client $client
      */
-    public function __construct(/**
+    public function __construct(
+        /**
          * The Http client instance.
          */
         protected Client $client
@@ -156,6 +157,11 @@ class Request
     public function setToken(string $token): void
     {
         $this->builder->setToken($token);
+    }
+
+    public function isOauth(): bool
+    {
+        return $this->client->isOauth();
     }
 
     /**

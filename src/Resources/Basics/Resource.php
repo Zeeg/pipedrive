@@ -48,9 +48,9 @@ abstract class Resource
      *
      * @param array $options Endpoint accepted options
      *
-     * @return Response
+     * @return Response|null
      */
-    public function all(array $options = []): Response
+    public function all(array $options = []): ?Response
     {
         return $this->request->get('', $options);
     }

@@ -49,5 +49,5 @@ interface Client
      *
      * @return bool
      */
-    public function isOauth(): bool;
+    public function isOauth(): ?bool;
 }
