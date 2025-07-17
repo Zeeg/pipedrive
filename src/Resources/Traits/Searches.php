@@ -11,9 +11,9 @@ trait Searches
      * @param array  $fields
      * @param array  $options
      *
-     * @return Response
+     * @return Response|null
      */
-    public function search(string $term, array $fields = [], array $options = []): Response
+    public function search(string $term, array $fields = [], array $options = []): Response|null
     {
         $options['term'] = $term;
         $options['fields'] = $fields;
