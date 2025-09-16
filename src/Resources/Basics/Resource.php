@@ -50,7 +50,7 @@ abstract class Resource
      *
      * @return Response|null
      */
-    public function all(array $options = []): ?Response
+    public function all(array $options = []): Response|null
     {
         return $this->request->get('', $options);
     }
@@ -60,20 +60,20 @@ abstract class Resource
      *
      * @param int $id Entity ID to find.
      *
-     * @return Response
+     * @return Response|null
      */
-    public function find(int $id): Response
+    public function find(int $id): Response|null
     {
-        return $this->request->get(':id', ['id' => $id]);
+        return $this->request->get(':id', compact('id'));
     }
 
     /**
      * Add a new entity.
      *
      * @param array $values
-     * @return Response
+     * @return Response|null
      */
-    public function add(array $values): Response
+    public function add(array $values): Response|null
     {
         if ($this->addPostedAsJson) {
             $values['json'] = true;
@@ -88,9 +88,9 @@ abstract class Resource
      * @param int   $id
      * @param array $values
      *
-     * @return Response
+     * @return Response|null
      */
-    public function update(int $id, array $values): Response
+    public function update(int $id, array $values): Response|null
     {
         Arr::set($values, 'id', $id);
 
@@ -103,9 +103,9 @@ abstract class Resource
      * @param int   $id
      * @param array $values
      *
-     * @return Response
+     * @return Response|null
      */
-    public function patch(int $id, array $values): Response
+    public function patch(int $id, array $values): Response|null
     {
         Arr::set($values, 'id', $id);
 
@@ -117,22 +117,22 @@ abstract class Resource
      *
      * @param int $id
      *
-     * @return Response
+     * @return Response|null
      */
-    public function delete(int $id): Response
+    public function delete(int $id): Response|null
     {
-        return $this->request->delete(':id', ['id' => $id]);
+        return $this->request->delete(':id', compact('id'));
     }
 
     /**
      * Bulk deleting entities.
      *
      * @param array $ids
-     * @return Response
+     * @return Response|null
      */
-    public function deleteBulk(array $ids): Response
+    public function deleteBulk(array $ids): Response|null
     {
-        return $this->request->delete('', ['ids' => $ids]);
+        return $this->request->delete('', compact('ids'));
     }
 
     /**
